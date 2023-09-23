@@ -3,13 +3,14 @@ import { Box, Grid } from "@mui/material";
 import MapCarousel from "../components/carousel/Carousel";
 import { getF1DataFromApi } from "../service/f1Service";
 import { RaceTable, Root } from "../types/F1Data";
-import Circuits from "../components/carousel/Circuits";
-import Drivers from "../components/carousel/Drivers";
+import Circuits from "../components/F1Data/Circuits";
+import Drivers from "../components/F1Data/Drivers";
 import { CircuitFE } from "../types/CircruitFE";
 import DataTable from "../components/table/DataTable";
 import F1AutoComplete, {
   AutoCompleteOptions,
 } from "../components/autocomplete/F1AutoComplete";
+import { yearCircuitMap } from "../components/F1Data/YearCircuitMap";
 
 const MainPage = () => {
   // State variables
@@ -26,25 +27,26 @@ const MainPage = () => {
 
   // Data from external sources
   const allCircuits: CircuitFE[] = Circuits();
+  const [allCircuitsForYear, setAllCircuitsForYear] = useState(allCircuits);
   const allDrivers = Drivers();
+  const [modifiedDrivers, setModifiedDrivers] = useState(allDrivers);
+
   const years = Array.from(Array(2023 - 1950 + 1).keys()).map(
     (element) => 2023 - element
   );
 
   // Fetch F1 data from the API
-  const getF1Data = async () => {
-    const data: RaceTable = formatData(
-      await getF1DataFromApi(year, allCircuits[goToSlide]?.circuitId)
-    );
+  const getF1Data = async (circuitId: string) => {
+    const data: RaceTable = formatData(await getF1DataFromApi(year, circuitId));
     setSelectedRaceData(data);
   };
 
   // Event handlers
   const handleSelectChangeCircuit = (circuitId: string) => {
-    const selected = allCircuits.find(
+    const selected = allCircuitsForYear.find(
       (element) => element?.circuitId === circuitId
     );
-    const indexOfCircuit = selected ? allCircuits.indexOf(selected) : 0;
+    const indexOfCircuit = selected ? allCircuitsForYear.indexOf(selected) : 0;
     setGoToSlide(indexOfCircuit);
   };
 
@@ -63,15 +65,26 @@ const MainPage = () => {
 
   // Effects
   useEffect(() => {
-    getF1Data();
+    const filteredCircuits = allCircuits.filter((circuit) =>
+      yearCircuitMap.get(year.toString())?.includes(circuit?.circuitId)
+    );
+    setAllCircuitsForYear(filteredCircuits);
+    getF1Data(filteredCircuits[0]?.circuitId);
   }, [year]);
 
   useEffect(() => {
-    getF1Data();
+    getF1Data(allCircuitsForYear[goToSlide]?.circuitId);
   }, [goToSlide]);
 
   useEffect(() => {
     setModifiedRaceData(selectedRaceData);
+    const driverIdsInSelectedRace: string[] =
+      selectedRaceData?.Races[0]?.Results?.map((row) => row?.Driver?.driverId);
+    setModifiedDrivers(
+      allDrivers.filter((driver) =>
+        driverIdsInSelectedRace?.includes(driver.driverId)
+      )
+    );
   }, [selectedRaceData]);
 
   useEffect(() => {
@@ -98,7 +111,7 @@ const MainPage = () => {
     modifiedRaceData != null && modifiedRaceData?.Races?.length > 0;
 
   // Options for driver selection
-  const allDriverOptions: AutoCompleteOptions[] = allDrivers.map(
+  const allDriverOptions: AutoCompleteOptions[] = modifiedDrivers.map(
     (element, index) => ({
       label: `${element.firstName} ${element.lastName}`,
       id: element.driverId,
@@ -106,7 +119,7 @@ const MainPage = () => {
   );
 
   // Options for track selection
-  const allTrackOptions: AutoCompleteOptions[] = allCircuits.map(
+  const allTrackOptions: AutoCompleteOptions[] = allCircuitsForYear.map(
     (element, index) => ({
       label: element.name,
       id: element.circuitId,
@@ -127,10 +140,9 @@ const MainPage = () => {
           width={"50%"}
           margin={"0 auto"}
           offset={2}
-          showArrows={true}
           goToSlide={goToSlide}
           setGoToSlide={setGoToSlide}
-          allCircuits={allCircuits}
+          allCircuits={allCircuitsForYear}
         />
       </Box>
 
@@ -146,6 +158,9 @@ const MainPage = () => {
             handleSelectChange={handleChangeYear}
             label="Years"
             useDefault={true}
+            val={allYearOptions?.find(
+              (element) => element.id === year.toString()
+            )}
           />
         </Grid>
         <Grid item xs={4}>
@@ -154,6 +169,7 @@ const MainPage = () => {
             handleSelectChange={handleSelectChangeCircuit}
             label="Tracks"
             useDefault={true}
+            val={allTrackOptions[goToSlide]}
           />
         </Grid>
         <Grid item xs={4}>

@@ -1,12 +1,11 @@
 import Carousel from "react-spring-3d-carousel";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { config } from "@react-spring/web";
 import { CircuitFE } from "../../types/CircruitFE";
 import Cards from "./Cards";
 
 interface Props {
   offset: number;
-  showArrows?: boolean;
   width: string;
   height: string;
   margin: string;
@@ -17,7 +16,6 @@ interface Props {
 
 const MapCarousel = ({
   offset,
-  showArrows,
   width,
   height,
   margin,
@@ -25,30 +23,33 @@ const MapCarousel = ({
   setGoToSlide,
   allCircuits,
 }: Props): JSX.Element => {
-  const cardsList = Cards(allCircuits);
-  const table = cardsList.map((element, index) => {
-    return { ...element, onClick: () => setGoToSlide(index) };
-  });
+  const [cards, setCards] = useState<
+    {
+      onClick: () => void;
+      key: number;
+      content: JSX.Element;
+    }[]
+  >([]);
 
-  // const [offsetRadius, setOffsetRadius] = useState(2);
-  //   const [showArrows, setShowArrows] = useState(true);
-
-  const [cards] = useState(table);
-
-  // useEffect(() => {
-  //   setOffsetRadius(offset);
-  //   // setShowArrows(showArrows);
-  // }, [offset, showArrows]);
+  useEffect(() => {
+    const cardsList = Cards(allCircuits);
+    const table = cardsList.map((element, index) => {
+      return { ...element, onClick: () => setGoToSlide(index) };
+    });
+    setCards(table);
+  }, [allCircuits]);
 
   return (
     <div style={{ width: width, height: height, margin: margin }}>
-      <Carousel
-        slides={cards}
-        goToSlide={goToSlide}
-        offsetRadius={offset}
-        showNavigation={false}
-        animationConfig={config.gentle}
-      />
+      {cards?.length > 0 && (
+        <Carousel
+          slides={cards}
+          goToSlide={goToSlide}
+          offsetRadius={offset}
+          showNavigation={false}
+          animationConfig={config.gentle}
+        />
+      )}
     </div>
   );
 };

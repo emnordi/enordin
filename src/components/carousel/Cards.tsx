@@ -1,6 +1,5 @@
 import { CircuitFE } from "../../types/CircruitFE";
 import Card from "../card/Card";
-import Circuits from "./Circuits";
 
 export default function Cards(allCircuits: CircuitFE[]) {
   return allCircuits.map((element, index) => {
