@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { Box, Grid } from "@mui/material";
+import { Box, Grid, Tab, Tabs } from "@mui/material";
 import MapCarousel from "../components/carousel/Carousel";
 import { getF1DataFromApi } from "../service/f1Service";
-import { RaceTable, Root } from "../types/F1Data";
+import { RaceTable, Result, Root } from "../types/F1Data";
 import Circuits from "../components/F1Data/Circuits";
 import Drivers from "../components/F1Data/Drivers";
 import { CircuitFE } from "../types/CircruitFE";
@@ -11,6 +11,7 @@ import F1AutoComplete, {
   AutoCompleteOptions,
 } from "../components/autocomplete/F1AutoComplete";
 import { yearCircuitMap } from "../components/F1Data/YearCircuitMap";
+import DataTableQuali from "../components/table/DataTableQuali";
 
 const MainPage = () => {
   // State variables
@@ -30,6 +31,7 @@ const MainPage = () => {
   const [allCircuitsForYear, setAllCircuitsForYear] = useState(allCircuits);
   const allDrivers = Drivers();
   const [modifiedDrivers, setModifiedDrivers] = useState(allDrivers);
+  const [eventValue, setEventValue] = useState("results");
 
   const years = Array.from(Array(2023 - 1950 + 1).keys()).map(
     (element) => 2023 - element
@@ -37,7 +39,9 @@ const MainPage = () => {
 
   // Fetch F1 data from the API
   const getF1Data = async (circuitId: string) => {
-    const data: RaceTable = formatData(await getF1DataFromApi(year, circuitId));
+    const data: RaceTable = formatData(
+      await getF1DataFromApi(year, circuitId, eventValue)
+    );
     setSelectedRaceData(data);
   };
 
@@ -58,6 +62,10 @@ const MainPage = () => {
     setYear(Number(newYear));
   };
 
+  const handleChangeEvent = (choice: string) => {
+    setEventValue(choice);
+  };
+
   // Format F1 data
   const formatData = (data: Root): RaceTable => {
     return data?.MRData?.RaceTable;
@@ -74,12 +82,39 @@ const MainPage = () => {
 
   useEffect(() => {
     getF1Data(allCircuitsForYear[goToSlide]?.circuitId);
-  }, [goToSlide]);
+  }, [goToSlide, eventValue]);
+
+  useEffect(() => {
+    setSelectedDriver("");
+  }, [eventValue]);
+
+  const getResultFromObjectBasedOnEventType = (
+    raceData: RaceTable
+  ): Result[] => {
+    let results: Result[] = [];
+    switch (eventValue) {
+      case "qualifying": {
+        results = raceData?.Races[0]?.QualifyingResults ?? [];
+        break;
+      }
+      case "sprint": {
+        results = raceData?.Races[0]?.SprintResults ?? [];
+        break;
+      }
+      default: {
+        results = raceData?.Races[0]?.Results ?? [];
+        break;
+      }
+    }
+
+    return results;
+  };
 
   useEffect(() => {
     setModifiedRaceData(selectedRaceData);
+    const res = getResultFromObjectBasedOnEventType(selectedRaceData);
     const driverIdsInSelectedRace: string[] =
-      selectedRaceData?.Races[0]?.Results?.map((row) => row?.Driver?.driverId);
+      res.map((row) => row?.Driver?.driverId) ?? [];
     setModifiedDrivers(
       allDrivers.filter((driver) =>
         driverIdsInSelectedRace?.includes(driver.driverId)
@@ -94,28 +129,34 @@ const MainPage = () => {
     }
 
     const { season, circuitId, Races } = selectedRaceData;
-    const filteredResults = selectedRaceData?.Races[0]?.Results.filter(
-      (row) => row.Driver.driverId === selectedDriver
-    );
 
-    const { Results, ...rest } = Races[0];
+    const filteredResults = getResultFromObjectBasedOnEventType(
+      selectedRaceData
+    ).filter((row) => row.Driver.driverId === selectedDriver);
+
+    const { Results, SprintResults, QualifyingResults, ...rest } = Races[0];
     setModifiedRaceData({
       season,
       circuitId,
-      Races: [{ Results: filteredResults, ...rest }],
+      Races: [
+        {
+          Results: filteredResults,
+          SprintResults: filteredResults,
+          QualifyingResults: filteredResults,
+          ...rest,
+        },
+      ],
     });
   }, [selectedDriver]);
 
-  // Data display
-  const showData: boolean =
-    modifiedRaceData != null && modifiedRaceData?.Races?.length > 0;
-
   // Options for driver selection
-  const allDriverOptions: AutoCompleteOptions[] = modifiedDrivers.map(
-    (element, index) => ({
+  const allDriverOptions: AutoCompleteOptions[] = [
+    { label: "Chose a driver to see only their results", id: "" },
+  ].concat(
+    modifiedDrivers.map((element, index) => ({
       label: `${element.firstName} ${element.lastName}`,
       id: element.driverId,
-    })
+    }))
   );
 
   // Options for track selection
@@ -131,6 +172,15 @@ const MainPage = () => {
     label: element.toString(),
     id: element.toString(),
   }));
+
+  const allEventOptions: AutoCompleteOptions[] = [
+    { label: "Race", id: "results" },
+    { label: "Sprint", id: "sprint" },
+    { label: "Qualifying", id: "qualifying" },
+  ];
+
+  const selectedRaceResults =
+    getResultFromObjectBasedOnEventType(modifiedRaceData);
 
   return (
     <>
@@ -152,18 +202,27 @@ const MainPage = () => {
         columnSpacing={{ xs: 1, sm: 2, md: 3 }}
         sx={{ marginTop: "200px" }}
       >
-        <Grid item xs={4}>
+        <Grid item xs={3}>
+          <F1AutoComplete
+            allOptions={allEventOptions}
+            handleSelectChange={handleChangeEvent}
+            label="Event Type"
+            useDefault={true}
+            val={allEventOptions?.find((element) => element.id === eventValue)}
+          />
+        </Grid>
+        <Grid item xs={3}>
           <F1AutoComplete
             allOptions={allYearOptions}
             handleSelectChange={handleChangeYear}
             label="Years"
             useDefault={true}
             val={allYearOptions?.find(
-              (element) => element.id === year.toString()
+              (element) => element.label === year.toString()
             )}
           />
         </Grid>
-        <Grid item xs={4}>
+        <Grid item xs={3}>
           <F1AutoComplete
             allOptions={allTrackOptions}
             handleSelectChange={handleSelectChangeCircuit}
@@ -172,18 +231,28 @@ const MainPage = () => {
             val={allTrackOptions[goToSlide]}
           />
         </Grid>
-        <Grid item xs={4}>
+        <Grid item xs={3}>
           <F1AutoComplete
             allOptions={allDriverOptions}
             handleSelectChange={handleSelectChangeDriver}
+            val={allDriverOptions?.find(
+              (element) => element.id === selectedDriver
+            )}
             label="Driver"
           />
         </Grid>
         <Grid item xs={12}>
-          {showData ? (
-            <DataTable selectedRaceData={modifiedRaceData} />
-          ) : (
-            <>{`No results available for ${allCircuits[goToSlide]?.name} in ${year} or selected driver`}</>
+          {eventValue === "qualifying" && (
+            <DataTableQuali
+              selectedRaceData={selectedRaceResults}
+              notFound={`No qualifying available for ${allCircuits[goToSlide]?.name} in ${year} or selected driver`}
+            />
+          )}
+          {eventValue !== "qualifying" && (
+            <DataTable
+              selectedRaceData={selectedRaceResults}
+              notFound={`No results available for ${allCircuits[goToSlide]?.name} in ${year} or selected driver`}
+            />
           )}
         </Grid>
       </Grid>

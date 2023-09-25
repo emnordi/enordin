@@ -14,7 +14,7 @@ interface Props {
   notFound: string;
 }
 
-const DataTable = ({ selectedRaceData, notFound }: Props) => {
+const DataTableQuali = ({ selectedRaceData, notFound }: Props) => {
   const showData: boolean =
     selectedRaceData != null && selectedRaceData?.length > 0;
 
@@ -26,9 +26,9 @@ const DataTable = ({ selectedRaceData, notFound }: Props) => {
             <TableRow>
               <TableCell align="right">Position</TableCell>
               <TableCell align="right">Driver</TableCell>
-              <TableCell align="right">Starting Position</TableCell>
-              <TableCell align="right">Positions Gained</TableCell>
-              <TableCell align="right">Fastest Lap</TableCell>
+              <TableCell align="right">Q1 Time</TableCell>
+              <TableCell align="right">Q2 Time</TableCell>
+              <TableCell align="right">Q3 Time</TableCell>
               <TableCell align="right">Nationality</TableCell>
               <TableCell align="right">Constructor</TableCell>
             </TableRow>
@@ -43,13 +43,9 @@ const DataTable = ({ selectedRaceData, notFound }: Props) => {
                 <TableCell align="right">
                   {row?.Driver?.givenName + " " + row?.Driver?.familyName}
                 </TableCell>
-                <TableCell align="right">{row?.grid}</TableCell>
-                <TableCell align="right">
-                  {+row?.grid - +row?.position}
-                </TableCell>
-                <TableCell align="right">
-                  {row.FastestLap?.Time?.time}
-                </TableCell>
+                <TableCell align="right">{row?.Q1}</TableCell>
+                <TableCell align="right">{row?.Q2}</TableCell>
+                <TableCell align="right">{row?.Q3}</TableCell>
                 <TableCell align="right">{row?.Driver?.nationality}</TableCell>
                 <TableCell align="right">{row?.Constructor?.name}</TableCell>
               </TableRow>
@@ -62,4 +58,4 @@ const DataTable = ({ selectedRaceData, notFound }: Props) => {
   );
 };
 
-export default DataTable;
+export default DataTableQuali;

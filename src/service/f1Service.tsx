@@ -5,14 +5,17 @@ import { Root } from "../types/F1Data";
 
 export async function getF1DataFromApi(
   season: number,
-  circuitId: string
+  circuitId: string,
+  eventType: string
 ): Promise<Root> {
   const response = await fetch(
     "https://ergast.com/api/f1/" +
       season +
       "/circuits/" +
       circuitId +
-      "/results.json"
+      "/" +
+      eventType +
+      ".json"
   );
   return response.json();
 }

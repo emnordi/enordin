@@ -26,7 +26,9 @@ export interface Race {
   Circuit: Circuit;
   date: string;
   time: string;
-  Results: Result[];
+  Results?: Result[];
+  SprintResults?: Result[];
+  QualifyingResults?: Result[];
 }
 
 export interface Circuit {
@@ -55,6 +57,9 @@ export interface Result {
   status: string;
   Time?: Time;
   FastestLap: FastestLap;
+  Q1?: string;
+  Q2?: string;
+  Q3?: string;
 }
 
 export interface Driver {
