@@ -46,7 +46,9 @@ const DataTableQuali = ({ selectedRaceData, notFound, theme }: Props) => {
                   },
                 }}
               >
-                <TableCell align="right">{row?.position}</TableCell>
+                <TableCell align="right" sx={{ paddingRight: "3em" }}>
+                  {row?.position}
+                </TableCell>
                 <TableCell align="right">
                   {row?.Driver?.givenName + " " + row?.Driver?.familyName}
                 </TableCell>

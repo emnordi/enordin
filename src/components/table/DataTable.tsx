@@ -66,12 +66,16 @@ const DataTable = ({ selectedRaceData, notFound, theme }: Props) => {
                   },
                 }}
               >
-                <TableCell align="right">{row?.position}</TableCell>
+                <TableCell align="right" sx={{ paddingRight: "3em" }}>
+                  {row?.position}
+                </TableCell>
                 <TableCell align="right">
                   {row?.Driver?.givenName + " " + row?.Driver?.familyName}
                 </TableCell>
-                <TableCell align="right">{row?.grid}</TableCell>
-                <TableCell align="right">
+                <TableCell align="right" sx={{ paddingRight: "6em" }}>
+                  {row?.grid}
+                </TableCell>
+                <TableCell align="right" sx={{ paddingRight: "4em" }}>
                   {+row?.grid - +row?.position}
                   {getArrow(+row?.grid - +row?.position)}
                 </TableCell>
