@@ -178,7 +178,6 @@ const ResponsiveAppBar = ({ theme, colorMode }: Props): JSX.Element => {
               // p: 3,
             }}
           >
-            {theme.palette.mode} mode
             <IconButton
               sx={{ ml: 1 }}
               onClick={colorMode.toggleColorMode}

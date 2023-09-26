@@ -6,15 +6,17 @@ import {
   TableRow,
   TableCell,
   TableBody,
+  Theme,
 } from "@mui/material";
 import { Result } from "../../types/F1Data";
 
 interface Props {
   selectedRaceData: Result[];
   notFound: string;
+  theme: Theme;
 }
 
-const DataTable = ({ selectedRaceData, notFound }: Props) => {
+const DataTable = ({ selectedRaceData, notFound, theme }: Props) => {
   const showData: boolean =
     selectedRaceData != null && selectedRaceData?.length > 0;
 
@@ -23,7 +25,11 @@ const DataTable = ({ selectedRaceData, notFound }: Props) => {
       {showData && (
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
-            <TableRow>
+            <TableRow
+              sx={{
+                th: { fontWeight: "bold", fontSize: "1em" },
+              }}
+            >
               <TableCell align="right">Position</TableCell>
               <TableCell align="right">Driver</TableCell>
               <TableCell align="right">Starting Position</TableCell>
@@ -37,7 +43,12 @@ const DataTable = ({ selectedRaceData, notFound }: Props) => {
             {selectedRaceData.map((row) => (
               <TableRow
                 key={row?.position}
-                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                sx={{
+                  "&:last-child td, &:last-child th": { border: 0 },
+                  "&:nth-of-type(odd)": {
+                    backgroundColor: theme.palette.action.hover,
+                  },
+                }}
               >
                 <TableCell align="right">{row?.position}</TableCell>
                 <TableCell align="right">

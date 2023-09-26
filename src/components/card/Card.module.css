@@ -1,12 +1,12 @@
 .card {
   display: flex;
   flex-direction: column;
-  /* align-items: center; */
+  align-items: center;
   justify-content: center;
-  background-color: bisque;
-  width: 16rem;
+  background-color: black;
+  width: 35em;
   height: fit-content;
-  padding: 0 2rem 2rem 2rem;
+  padding: 0 2rem 1rem 2rem;
   border-radius: 10px;
 }
 
@@ -15,7 +15,6 @@
   width: 100%;
   border-radius: 20px;
 }
-
 .card h2 {
   margin: 0;
   margin-top: 1rem;
@@ -24,11 +23,5 @@
 .card p {
   margin: 0;
   margin-top: 0.5rem;
-  margin-bottom: 1.5rem;
-}
-
-.card .btnn {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  margin-bottom: 1rem;
 }

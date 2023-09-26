@@ -42,7 +42,7 @@ function App() {
         <ResponsiveAppBar theme={theme} colorMode={colorMode} />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<MainPage />} />
+            <Route path="/" element={<MainPage theme={theme} />} />
           </Routes>
         </BrowserRouter>
         <Footer />

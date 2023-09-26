@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Box, Grid, Tab, Tabs } from "@mui/material";
+import { Box, Grid, Tab, Tabs, Theme } from "@mui/material";
 import MapCarousel from "../components/carousel/Carousel";
 import { getF1DataFromApi } from "../service/f1Service";
 import { RaceTable, Result, Root } from "../types/F1Data";
@@ -13,7 +13,11 @@ import F1AutoComplete, {
 import { yearCircuitMap } from "../components/F1Data/YearCircuitMap";
 import DataTableQuali from "../components/table/DataTableQuali";
 
-const MainPage = () => {
+interface Props {
+  theme: Theme;
+}
+
+const MainPage = ({ theme }: Props) => {
   // State variables
   const [goToSlide, setGoToSlide] = useState(0);
   const [selectedDriver, setSelectedDriver] = useState<string>("");
@@ -29,7 +33,9 @@ const MainPage = () => {
   // Data from external sources
   const allCircuits: CircuitFE[] = Circuits();
   const [allCircuitsForYear, setAllCircuitsForYear] = useState(allCircuits);
-  const allDrivers = Drivers();
+  const allDrivers = Drivers().sort((a, b) =>
+    a.lastName.localeCompare(b.lastName)
+  );
   const [modifiedDrivers, setModifiedDrivers] = useState(allDrivers);
   const [eventValue, setEventValue] = useState("results");
 
@@ -184,12 +190,16 @@ const MainPage = () => {
 
   return (
     <>
-      <Box sx={{ marginTop: "200px" }}>
+      <Box
+        sx={{
+          marginTop: "180px",
+        }}
+      >
         <MapCarousel
-          height={"400px"}
+          height={"250px"}
           width={"50%"}
           margin={"0 auto"}
-          offset={2}
+          offset={4}
           goToSlide={goToSlide}
           setGoToSlide={setGoToSlide}
           allCircuits={allCircuitsForYear}
@@ -200,7 +210,7 @@ const MainPage = () => {
         container
         rowSpacing={1}
         columnSpacing={{ xs: 1, sm: 2, md: 3 }}
-        sx={{ marginTop: "200px" }}
+        sx={{ marginTop: "100px" }}
       >
         <Grid item xs={3}>
           <F1AutoComplete
@@ -246,12 +256,14 @@ const MainPage = () => {
             <DataTableQuali
               selectedRaceData={selectedRaceResults}
               notFound={`No qualifying available for ${allCircuits[goToSlide]?.name} in ${year} or selected driver`}
+              theme={theme}
             />
           )}
           {eventValue !== "qualifying" && (
             <DataTable
               selectedRaceData={selectedRaceResults}
               notFound={`No results available for ${allCircuits[goToSlide]?.name} in ${year} or selected driver`}
+              theme={theme}
             />
           )}
         </Grid>

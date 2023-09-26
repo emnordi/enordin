@@ -1,5 +1,6 @@
 import { animated, useSpring } from "@react-spring/web";
 import { useState } from "react";
+import Styles from "./Card.module.css";
 
 interface Props {
   imagen: string;
@@ -20,16 +21,12 @@ const Card = ({ imagen, title, location, country }: Props) => {
 
   return (
     <animated.div
+      className={Styles.card}
       style={props3}
       onMouseEnter={() => setShown(true)}
       onMouseLeave={() => setShown(false)}
     >
-      <img
-        src={"assets/" + imagen + ".jpg"}
-        alt="412"
-        width="1000"
-        height="600"
-      />
+      <img src={"assets/" + imagen + ".jpg"} alt="Not found" />
       <h2>{title}</h2>
       <p>
         Location: {location} - {country}
