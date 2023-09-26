@@ -9,12 +9,28 @@ import {
   Theme,
 } from "@mui/material";
 import { Result } from "../../types/F1Data";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 
 interface Props {
   selectedRaceData: Result[];
   notFound: string;
   theme: Theme;
 }
+
+const getArrow = (position: number) => {
+  if (position > 0) {
+    return (
+      <KeyboardArrowUpIcon sx={{ color: "green", marginBottom: "-5px" }} />
+    );
+  } else if (position < 0) {
+    return (
+      <KeyboardArrowDownIcon sx={{ color: "red", marginBottom: "-5px" }} />
+    );
+  } else {
+    return <KeyboardArrowDownIcon sx={{ visibility: "hidden" }} />;
+  }
+};
 
 const DataTable = ({ selectedRaceData, notFound, theme }: Props) => {
   const showData: boolean =
@@ -57,6 +73,7 @@ const DataTable = ({ selectedRaceData, notFound, theme }: Props) => {
                 <TableCell align="right">{row?.grid}</TableCell>
                 <TableCell align="right">
                   {+row?.grid - +row?.position}
+                  {getArrow(+row?.grid - +row?.position)}
                 </TableCell>
                 <TableCell align="right">
                   {row.FastestLap?.Time?.time}
