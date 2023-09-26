@@ -196,7 +196,7 @@ const MainPage = ({ theme }: Props) => {
         }}
       >
         <MapCarousel
-          height={"250px"}
+          height={"230px"}
           width={"50%"}
           margin={"0 auto"}
           offset={4}
@@ -206,68 +206,73 @@ const MainPage = ({ theme }: Props) => {
         />
       </Box>
 
-      <Grid
-        container
-        rowSpacing={1}
-        columnSpacing={{ xs: 1, sm: 2, md: 3 }}
-        sx={{ marginTop: "100px" }}
+      <Box
+        sx={{
+          paddingTop: "6rem",
+          width: "80%",
+          margin: "0 auto",
+        }}
       >
-        <Grid item xs={3}>
-          <F1AutoComplete
-            allOptions={allEventOptions}
-            handleSelectChange={handleChangeEvent}
-            label="Event Type"
-            useDefault={true}
-            val={allEventOptions?.find((element) => element.id === eventValue)}
-          />
-        </Grid>
-        <Grid item xs={3}>
-          <F1AutoComplete
-            allOptions={allYearOptions}
-            handleSelectChange={handleChangeYear}
-            label="Years"
-            useDefault={true}
-            val={allYearOptions?.find(
-              (element) => element.label === year.toString()
-            )}
-          />
-        </Grid>
-        <Grid item xs={3}>
-          <F1AutoComplete
-            allOptions={allTrackOptions}
-            handleSelectChange={handleSelectChangeCircuit}
-            label="Tracks"
-            useDefault={true}
-            val={allTrackOptions[goToSlide]}
-          />
-        </Grid>
-        <Grid item xs={3}>
-          <F1AutoComplete
-            allOptions={allDriverOptions}
-            handleSelectChange={handleSelectChangeDriver}
-            val={allDriverOptions?.find(
-              (element) => element.id === selectedDriver
-            )}
-            label="Driver"
-          />
-        </Grid>
-        <Grid item xs={12}>
-          {eventValue === "qualifying" && (
-            <DataTableQuali
-              selectedRaceData={selectedRaceResults}
-              notFound={`No qualifying available for ${allCircuits[goToSlide]?.name} in ${year} or selected driver`}
-              theme={theme}
+        <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+          <Grid item xs={3}>
+            <F1AutoComplete
+              allOptions={allEventOptions}
+              handleSelectChange={handleChangeEvent}
+              label="Event Type"
+              useDefault={true}
+              val={allEventOptions?.find(
+                (element) => element.id === eventValue
+              )}
             />
-          )}
-          {eventValue !== "qualifying" && (
-            <DataTable
-              selectedRaceData={selectedRaceResults}
-              notFound={`No results available for ${allCircuits[goToSlide]?.name} in ${year} or selected driver`}
-              theme={theme}
+          </Grid>
+          <Grid item xs={3}>
+            <F1AutoComplete
+              allOptions={allYearOptions}
+              handleSelectChange={handleChangeYear}
+              label="Years"
+              useDefault={true}
+              val={allYearOptions?.find(
+                (element) => element.label === year.toString()
+              )}
             />
-          )}
+          </Grid>
+          <Grid item xs={3}>
+            <F1AutoComplete
+              allOptions={allTrackOptions}
+              handleSelectChange={handleSelectChangeCircuit}
+              label="Tracks"
+              useDefault={true}
+              val={allTrackOptions[goToSlide]}
+            />
+          </Grid>
+          <Grid item xs={3}>
+            <F1AutoComplete
+              allOptions={allDriverOptions}
+              handleSelectChange={handleSelectChangeDriver}
+              val={allDriverOptions?.find(
+                (element) => element.id === selectedDriver
+              )}
+              label="Driver"
+            />
+          </Grid>
+          <Grid item xs={12}>
+            {eventValue === "qualifying" && (
+              <DataTableQuali
+                selectedRaceData={selectedRaceResults}
+                notFound={`No qualifying available for ${allCircuits[goToSlide]?.name} in ${year} or selected driver`}
+                theme={theme}
+              />
+            )}
+            {eventValue !== "qualifying" && (
+              <DataTable
+                selectedRaceData={selectedRaceResults}
+                notFound={`No results available for ${allCircuits[goToSlide]?.name} in ${year} or selected driver`}
+                theme={theme}
+              />
+            )}
+          </Grid>
         </Grid>
-      </Grid>
+      </Box>
     </>
   );
 };
