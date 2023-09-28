@@ -46,13 +46,13 @@ const DataTable = ({ selectedRaceData, notFound, theme }: Props) => {
                 th: { fontWeight: "bold", fontSize: "1em" },
               }}
             >
-              <TableCell align="right">Position</TableCell>
-              <TableCell align="right">Driver</TableCell>
-              <TableCell align="right">Starting Position</TableCell>
-              <TableCell align="right">Positions Gained</TableCell>
-              <TableCell align="right">Fastest Lap</TableCell>
-              <TableCell align="right">Nationality</TableCell>
-              <TableCell align="right">Constructor</TableCell>
+              <TableCell align="left">Position</TableCell>
+              <TableCell align="left">Driver</TableCell>
+              <TableCell align="left">Starting Position</TableCell>
+              <TableCell align="left">Positions Gained</TableCell>
+              <TableCell align="left">Fastest Lap</TableCell>
+              <TableCell align="left">Nationality</TableCell>
+              <TableCell align="left">Constructor</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -66,24 +66,22 @@ const DataTable = ({ selectedRaceData, notFound, theme }: Props) => {
                   },
                 }}
               >
-                <TableCell align="right" sx={{ paddingRight: "3em" }}>
+                <TableCell align="left" sx={{ paddingLeft: "3%" }}>
                   {row?.position}
                 </TableCell>
-                <TableCell align="right">
+                <TableCell align="left">
                   {row?.Driver?.givenName + " " + row?.Driver?.familyName}
                 </TableCell>
-                <TableCell align="right" sx={{ paddingRight: "6em" }}>
+                <TableCell align="left" sx={{ paddingLeft: "5%" }}>
                   {row?.grid}
                 </TableCell>
-                <TableCell align="right" sx={{ paddingRight: "4em" }}>
+                <TableCell align="left" sx={{ paddingLeft: "5%" }}>
                   {+row?.grid - +row?.position}
                   {getArrow(+row?.grid - +row?.position)}
                 </TableCell>
-                <TableCell align="right">
-                  {row.FastestLap?.Time?.time}
-                </TableCell>
-                <TableCell align="right">{row?.Driver?.nationality}</TableCell>
-                <TableCell align="right">{row?.Constructor?.name}</TableCell>
+                <TableCell align="left">{row.FastestLap?.Time?.time}</TableCell>
+                <TableCell align="left">{row?.Driver?.nationality}</TableCell>
+                <TableCell align="left">{row?.Constructor?.name}</TableCell>
               </TableRow>
             ))}
           </TableBody>
