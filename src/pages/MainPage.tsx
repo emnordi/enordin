@@ -6,6 +6,7 @@ import F1AutoComplete from "../components/autocomplete/F1AutoComplete";
 import { yearCircuitMap } from "../components/F1Data/YearCircuitMap";
 import DataTableQuali from "../components/table/DataTableQuali";
 import useStateHelper from "./useStateHelper";
+import { CircuitFE } from "../types/CircruitFE";
 
 interface Props {
   theme: Theme;
@@ -41,10 +42,16 @@ const MainPage = ({ theme }: Props) => {
 
   // Effects
   useEffect(() => {
+    const circuits: CircuitFE[] = [];
+    yearCircuitMap.get(year.toString())?.forEach((value) => {
+      const c = allCircuits.find((circuit) => circuit?.circuitId === value);
+      if (c != null) circuits.push(c);
+    });
+
     const filteredCircuits = allCircuits.filter((circuit) =>
       yearCircuitMap.get(year.toString())?.includes(circuit?.circuitId)
     );
-    setAllCircuitsForYear(filteredCircuits);
+    setAllCircuitsForYear(circuits);
     getF1Data(filteredCircuits[0]?.circuitId);
   }, [year]);
 
