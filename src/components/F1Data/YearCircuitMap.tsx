@@ -20,6 +20,7 @@ export const yearCircuitMap = new Map<string, string[]>([
       "monza",
       "marina_bay",
       "suzuka",
+      "losail",
       "americas",
       "rodriguez",
       "interlagos",

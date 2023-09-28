@@ -7,6 +7,7 @@ import { yearCircuitMap } from "../components/F1Data/YearCircuitMap";
 import DataTableQuali from "../components/table/DataTableQuali";
 import useStateHelper from "./useStateHelper";
 import { CircuitFE } from "../types/CircruitFE";
+import { yearSprintRaceMap } from "../components/F1Data/SprintRaces";
 
 interface Props {
   theme: Theme;
@@ -38,6 +39,8 @@ const MainPage = ({ theme }: Props) => {
     handleChangeYear,
     handleChangeEvent,
     getResultFromObjectBasedOnEventType,
+    eventOptions,
+    setEventOptions,
   } = useStateHelper();
 
   // Effects
@@ -56,7 +59,14 @@ const MainPage = ({ theme }: Props) => {
   }, [year]);
 
   useEffect(() => {
-    getF1Data(allCircuitsForYear[goToCircuit]?.circuitId);
+    const selectedCircuitId = allCircuitsForYear[goToCircuit]?.circuitId;
+    if (!yearSprintRaceMap.get(year.toString())?.includes(selectedCircuitId)) {
+      setEventOptions(eventOptions.filter((option) => option.id !== "sprint"));
+      eventValue === "sprint" && handleChangeEvent("results");
+    } else {
+      setEventOptions(allEventOptions);
+    }
+    getF1Data(selectedCircuitId);
   }, [goToCircuit, eventValue]);
 
   useEffect(() => {
@@ -133,13 +143,11 @@ const MainPage = ({ theme }: Props) => {
         <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
           <Grid item xs={3}>
             <F1AutoComplete
-              allOptions={allEventOptions}
+              allOptions={eventOptions}
               handleSelectChange={handleChangeEvent}
               label="Event Type"
               useDefault={true}
-              val={allEventOptions?.find(
-                (element) => element.id === eventValue
-              )}
+              val={eventOptions?.find((element) => element.id === eventValue)}
             />
           </Grid>
           <Grid item xs={3}>

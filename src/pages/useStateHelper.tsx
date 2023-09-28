@@ -26,6 +26,14 @@ const useStateHelper = () => {
   const [modifiedDrivers, setModifiedDrivers] = useState(allDrivers);
   const [eventValue, setEventValue] = useState("results");
 
+  const allEventOptions: AutoCompleteOptions[] = [
+    { label: "Race", id: "results" },
+    { label: "Sprint", id: "sprint" },
+    { label: "Qualifying", id: "qualifying" },
+  ];
+
+  const [eventOptions, setEventOptions] = useState(allEventOptions);
+
   const years = Array.from(Array(2023 - 1950 + 1).keys()).map(
     (element) => 2023 - element
   );
@@ -77,12 +85,6 @@ const useStateHelper = () => {
     label: element.toString(),
     id: element.toString(),
   }));
-
-  const allEventOptions: AutoCompleteOptions[] = [
-    { label: "Race", id: "results" },
-    { label: "Sprint", id: "sprint" },
-    { label: "Qualifying", id: "qualifying" },
-  ];
 
   // Options for driver selection
   const allDriverOptions: AutoCompleteOptions[] = [
@@ -141,6 +143,8 @@ const useStateHelper = () => {
     handleChangeYear,
     handleChangeEvent,
     getResultFromObjectBasedOnEventType,
+    eventOptions,
+    setEventOptions,
   };
 };
 
