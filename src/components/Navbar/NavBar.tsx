@@ -7,17 +7,13 @@ import Typography from "@mui/material/Typography";
 import Menu from "@mui/material/Menu";
 import MenuIcon from "@mui/icons-material/Menu";
 import Container from "@mui/material/Container";
-import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
-import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
 import { Theme } from "@mui/material/styles";
-import { Garage } from "@mui/icons-material";
 
 const pages = ["Home"];
-const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
 interface Props {
   theme: Theme;
@@ -30,30 +26,29 @@ const ResponsiveAppBar = ({ theme, colorMode }: Props): JSX.Element => {
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
     null
   );
-  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
-    null
-  );
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
-  };
-  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElUser(event.currentTarget);
   };
 
   const handleCloseNavMenu = () => {
     setAnchorElNav(null);
   };
 
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
-  };
-
   return (
     <AppBar position="static">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <Garage sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} />
+          <Box
+            sx={{
+              mr: 2,
+              display: { xs: "none", md: "flex" },
+              height: "50px",
+              width: "50px",
+            }}
+          >
+            <img src="assets/logo.svg"></img>
+          </Box>
           <Typography
             variant="h6"
             noWrap
@@ -67,9 +62,10 @@ const ResponsiveAppBar = ({ theme, colorMode }: Props): JSX.Element => {
               letterSpacing: ".3rem",
               color: "inherit",
               textDecoration: "none",
+              padding: "1rem",
             }}
           >
-            MAX Time
+            enordin
           </Typography>
 
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
@@ -108,25 +104,17 @@ const ResponsiveAppBar = ({ theme, colorMode }: Props): JSX.Element => {
               ))}
             </Menu>
           </Box>
-          {/* <AdbIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} /> */}
-          <Typography
-            variant="h5"
-            noWrap
-            component="a"
-            href="/"
+          <Box
             sx={{
               mr: 2,
               display: { xs: "flex", md: "none" },
               flexGrow: 1,
-              fontFamily: "monospace",
-              fontWeight: 700,
-              letterSpacing: ".3rem",
-              color: "inherit",
-              textDecoration: "none",
+              height: "50px",
+              width: "50px",
             }}
           >
-            LOGO
-          </Typography>
+            <img src="assets/logo.svg"></img>
+          </Box>
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
             {pages.map((page) => (
               <Button
@@ -138,35 +126,6 @@ const ResponsiveAppBar = ({ theme, colorMode }: Props): JSX.Element => {
               </Button>
             ))}
           </Box>
-          {/* <Box sx={{ flexGrow: 0 }}>
-            <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
-              </IconButton>
-            </Tooltip>
-            <Menu
-              sx={{ mt: "45px" }}
-              id="menu-appbar"
-              anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-              open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
-            >
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
-                </MenuItem>
-              ))}
-            </Menu>
-          </Box> */}
           <Box
             sx={{
               display: "flex",
@@ -175,7 +134,6 @@ const ResponsiveAppBar = ({ theme, colorMode }: Props): JSX.Element => {
               justifyContent: "center",
               color: "text.primary",
               borderRadius: 1,
-              // p: 3,
             }}
           >
             <IconButton
