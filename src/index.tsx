@@ -9,9 +9,6 @@ const root = ReactDOM.createRoot(
 );
 root.render(
   <React.StrictMode>
-    <head>
-      <title>enordin</title>
-    </head>
     <App />
   </React.StrictMode>
 );
