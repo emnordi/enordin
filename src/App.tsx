@@ -6,6 +6,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import MainPage from "./pages/MainPage";
 import ResponsiveAppBar from "./components/Navbar/NavBar";
 import Footer from "./components/footer/Footer";
+import { Analytics } from "@vercel/analytics/react";
 
 function App() {
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
@@ -47,6 +48,7 @@ function App() {
         </BrowserRouter>
         <Footer />
       </div>
+      <Analytics />
     </ThemeProvider>
   );
 }
