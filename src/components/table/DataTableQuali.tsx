@@ -46,7 +46,7 @@ const DataTableQuali = ({ selectedRaceData, notFound, theme }: Props) => {
                   },
                 }}
               >
-                <TableCell align="right" sx={{ paddingLeft: "3%" }}>
+                <TableCell align="right" sx={{ paddingRight: "3em" }}>
                   {row?.position}
                 </TableCell>
                 <TableCell align="right">

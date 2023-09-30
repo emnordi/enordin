@@ -12,8 +12,12 @@ import MenuItem from "@mui/material/MenuItem";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
 import { Theme } from "@mui/material/styles";
+import { Link } from "react-router-dom";
 
-const pages = ["Home"];
+const pages = [
+  { title: "Race results", path: "/" },
+  { title: "Standings", path: "/standings" },
+];
 
 interface Props {
   theme: Theme;
@@ -35,8 +39,18 @@ const ResponsiveAppBar = ({ theme, colorMode }: Props): JSX.Element => {
     setAnchorElNav(null);
   };
 
+  const pathName = window.location.pathname;
+
   return (
-    <AppBar position="static">
+    <AppBar
+      position="static"
+      sx={{
+        backgroundColor:
+          theme.palette.mode === "dark"
+            ? theme.palette.background.default
+            : "#CBC3E3",
+      }}
+    >
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <Box
@@ -98,8 +112,8 @@ const ResponsiveAppBar = ({ theme, colorMode }: Props): JSX.Element => {
               }}
             >
               {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">{page}</Typography>
+                <MenuItem key={page.title} onClick={handleCloseNavMenu}>
+                  <Typography textAlign="center">{page.title}</Typography>
                 </MenuItem>
               ))}
             </Menu>
@@ -118,11 +132,17 @@ const ResponsiveAppBar = ({ theme, colorMode }: Props): JSX.Element => {
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
             {pages.map((page) => (
               <Button
-                key={page}
+                key={page.title}
                 onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: "white", display: "block" }}
+                sx={{
+                  my: 2,
+                  color:
+                    pathName === page.path ? theme.palette.error.main : "white",
+                  display: "block",
+                }}
+                href={page.path}
               >
-                {page}
+                {page.title}
               </Button>
             ))}
           </Box>

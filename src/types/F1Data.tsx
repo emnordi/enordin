@@ -2,6 +2,43 @@ export interface Root {
   MRData: Mrdata;
 }
 
+export interface StandingsRoot {
+  MRData: StandingsMrdata;
+}
+
+export interface StandingsMrdata {
+  StandingsTable: StandingsTable;
+}
+
+export interface StandingsTable {
+  season: string;
+  StandingsLists: StandingsList[];
+}
+
+export interface StandingsList {
+  season: string;
+  round: string;
+  DriverStandings?: DriverStanding[];
+  ConstructorStandings?: ConstructorStanding[];
+}
+
+export interface ConstructorStanding {
+  position: string;
+  positionText: string;
+  points: string;
+  wins: string;
+  Constructor: Constructor;
+}
+
+export interface DriverStanding {
+  position: string;
+  positionText: string;
+  points: string;
+  wins: string;
+  Driver: Driver;
+  Constructors: Constructor[];
+}
+
 export interface Mrdata {
   xmlns: string;
   series: string;

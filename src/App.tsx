@@ -7,6 +7,7 @@ import MainPage from "./pages/MainPage";
 import ResponsiveAppBar from "./components/Navbar/NavBar";
 import Footer from "./components/footer/Footer";
 import { Analytics } from "@vercel/analytics/react";
+import StandingsPage from "./pages/StandingPage";
 
 function App() {
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
@@ -44,9 +45,13 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<MainPage theme={theme} />} />
+            <Route
+              path="/standings"
+              element={<StandingsPage theme={theme} />}
+            />
           </Routes>
         </BrowserRouter>
-        <Footer />
+        <Footer theme={theme} />
       </div>
       <Analytics />
     </ThemeProvider>

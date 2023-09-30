@@ -1,6 +1,10 @@
-import { Box, Container, Grid, Link, Typography } from "@mui/material";
+import { Box, Container, Grid, Link, Theme, Typography } from "@mui/material";
 
-const Footer = () => {
+interface Props {
+  theme: Theme;
+}
+
+const Footer = ({ theme }: Props) => {
   return (
     <Box
       sx={{
@@ -9,6 +13,7 @@ const Footer = () => {
         backgroundColor: "inherit",
         paddingTop: "1rem",
         paddingBottom: "1rem",
+        borderTop: "1px solid black",
       }}
     >
       <Container maxWidth="lg">
