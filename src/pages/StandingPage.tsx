@@ -47,18 +47,30 @@ const StandingsPage = ({ theme }: Props) => {
     return data.MRData.StandingsTable.StandingsLists[0];
   };
 
-  const getStandingsData = async () => {
-    const data = await getStandings(year, value === 0, round);
+  const getStandingsData = async (signal: AbortSignal) => {
+    const data = await getStandings(year, value === 0, round, signal);
     setStandingsData(formatData(data));
   };
 
   useEffect(() => {
-    getStandingsData();
+    const abortController = new window.AbortController();
+    const signal = abortController.signal;
+    getStandingsData(signal);
+    return () => {
+      if (signal && abortController.abort) {
+        abortController.abort();
+      }
+    };
   }, [value, year, round]);
 
   useEffect(() => {
-    setNumberOfRaces(yearCircuitMap.get(year.toString())?.length ?? 0);
-    setRound(0);
+    const newYearNumberOfRaces: number =
+      yearCircuitMap.get(year.toString())?.length ?? 0;
+
+    setNumberOfRaces(newYearNumberOfRaces);
+    if (newYearNumberOfRaces < round) {
+      setRound(0);
+    }
   }, [year]);
 
   return (

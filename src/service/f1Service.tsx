@@ -28,7 +28,8 @@ export async function getTrackOrder(season: number): Promise<Root> {
 export async function getStandings(
   season: number,
   driverStandings: boolean,
-  round?: number
+  round?: number,
+  signal?: AbortSignal
 ): Promise<StandingsRoot> {
   const standingType = driverStandings
     ? "driverStandings"
@@ -42,7 +43,8 @@ export async function getStandings(
       "/" +
       roundParam +
       standingType +
-      ".json"
+      ".json",
+    { signal }
   );
   return response.json();
 }
