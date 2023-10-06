@@ -4,9 +4,13 @@ interface Props {
   allOptions: AutoCompleteOptions[];
   handleSelectChange: (value: string) => void;
   label: string;
-  useDefault?: boolean;
   val?: AutoCompleteOptions;
 }
+
+export const driversEmptyOption: AutoCompleteOptions = {
+  label: "Chose a driver to see only their results",
+  id: "",
+};
 
 export interface AutoCompleteOptions {
   label: string;
@@ -17,7 +21,6 @@ const F1AutoComplete = ({
   allOptions,
   handleSelectChange,
   label,
-  useDefault,
   val,
 }: Props) => {
   return (
@@ -38,7 +41,6 @@ const F1AutoComplete = ({
         },
       }}
       id="combo-box-demo"
-      // value={useDefault ? allOptions[0] : null}
       value={val}
       options={allOptions ?? []}
       onChange={(event, value) => {

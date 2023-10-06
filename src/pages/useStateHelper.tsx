@@ -1,14 +1,18 @@
 import { useState } from "react";
 import { RaceTable, Result, Root } from "../types/F1Data";
 import Circuits from "../components/F1Data/Circuits";
-import Drivers from "../components/F1Data/Drivers";
 import { CircuitFE } from "../types/CircruitFE";
 import { getF1DataFromApi } from "../service/f1Service";
-import { AutoCompleteOptions } from "../components/autocomplete/F1AutoComplete";
+import {
+  AutoCompleteOptions,
+  driversEmptyOption,
+} from "../components/autocomplete/F1AutoComplete";
+import { Driver } from "../types/driver";
 
-const useStateHelper = () => {
+const useStateHelper = (drivers: Driver[]) => {
   const [goToCircuit, setGoToCircuit] = useState(0);
-  const [selectedDriver, setSelectedDriver] = useState<string>("");
+  const [selectedDriver, setSelectedDriver] =
+    useState<AutoCompleteOptions>(driversEmptyOption);
   const [selectedRaceData, setSelectedRaceData] = useState<RaceTable>({
     season: "",
     circuitId: "",
@@ -19,10 +23,7 @@ const useStateHelper = () => {
   const [year, setYear] = useState(2023);
   const allCircuits: CircuitFE[] = Circuits();
   const [allCircuitsForYear, setAllCircuitsForYear] = useState(allCircuits);
-  const allDrivers = Drivers().sort((a, b) =>
-    a.lastName.localeCompare(b.lastName)
-  );
-
+  const allDrivers = drivers.sort((a, b) => a.surname.localeCompare(b.surname));
   const [modifiedDrivers, setModifiedDrivers] = useState(allDrivers);
   const [eventValue, setEventValue] = useState("results");
 
@@ -55,10 +56,6 @@ const useStateHelper = () => {
     setGoToCircuit(indexOfCircuit);
   };
 
-  const handleSelectChangeDriver = (driverId: string) => {
-    setSelectedDriver(driverId);
-  };
-
   const handleChangeYear = (newYear: string) => {
     setYear(Number(newYear));
   };
@@ -85,16 +82,6 @@ const useStateHelper = () => {
     label: element.toString(),
     id: element.toString(),
   }));
-
-  // Options for driver selection
-  const allDriverOptions: AutoCompleteOptions[] = [
-    { label: "Chose a driver to see only their results", id: "" },
-  ].concat(
-    modifiedDrivers.map((element, index) => ({
-      label: `${element.firstName} ${element.lastName}`,
-      id: element.driverId,
-    }))
-  );
 
   const getResultFromObjectBasedOnEventType = (
     raceData: RaceTable
@@ -131,15 +118,14 @@ const useStateHelper = () => {
     allCircuitsForYear,
     setAllCircuitsForYear,
     allDrivers,
+    modifiedDrivers,
     setModifiedDrivers,
     eventValue,
     getF1Data,
     allTrackOptions,
     allYearOptions,
     allEventOptions,
-    allDriverOptions,
     handleSelectChangeCircuit,
-    handleSelectChangeDriver,
     handleChangeYear,
     handleChangeEvent,
     getResultFromObjectBasedOnEventType,

@@ -35,7 +35,7 @@ const StandingsPage = ({ theme }: Props) => {
     setRound(Number(newRound));
   };
 
-  const { year, allYearOptions, handleChangeYear } = useStateHelper();
+  const { year, allYearOptions, handleChangeYear } = useStateHelper([]);
 
   const [standingsData, setStandingsData] = React.useState<StandingsList>();
 
@@ -81,7 +81,6 @@ const StandingsPage = ({ theme }: Props) => {
             allOptions={allYearOptions}
             handleSelectChange={handleChangeYear}
             label="Years"
-            useDefault={true}
             val={allYearOptions?.find(
               (element) => element.label === year.toString()
             )}

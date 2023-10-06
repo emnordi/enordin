@@ -2,18 +2,23 @@ import { useEffect } from "react";
 import { Box, Grid, Theme } from "@mui/material";
 import MapCarousel from "../components/carousel/Carousel";
 import DataTable from "../components/table/DataTable";
-import F1AutoComplete from "../components/autocomplete/F1AutoComplete";
+import F1AutoComplete, {
+  driversEmptyOption,
+} from "../components/autocomplete/F1AutoComplete";
 import { yearCircuitMap } from "../components/F1Data/YearCircuitMap";
 import DataTableQuali from "../components/table/DataTableQuali";
 import useStateHelper from "./useStateHelper";
 import { CircuitFE } from "../types/CircruitFE";
 import { yearSprintRaceMap } from "../components/F1Data/SprintRaces";
+import { Driver } from "../types/driver";
+import DriverAutoComplete from "../components/autocomplete/DriverAutoComplete";
 
 interface Props {
   theme: Theme;
+  drivers?: Driver[];
 }
 
-const MainPage = ({ theme }: Props) => {
+const MainPage = ({ theme, drivers }: Props) => {
   const {
     goToCircuit,
     setGoToCircuit,
@@ -27,21 +32,20 @@ const MainPage = ({ theme }: Props) => {
     allCircuitsForYear,
     setAllCircuitsForYear,
     allDrivers,
+    modifiedDrivers,
     setModifiedDrivers,
     eventValue,
     getF1Data,
     allTrackOptions,
     allYearOptions,
     allEventOptions,
-    allDriverOptions,
     handleSelectChangeCircuit,
-    handleSelectChangeDriver,
     handleChangeYear,
     handleChangeEvent,
     getResultFromObjectBasedOnEventType,
     eventOptions,
     setEventOptions,
-  } = useStateHelper();
+  } = useStateHelper(drivers ?? []);
 
   // Effects
   useEffect(() => {
@@ -70,7 +74,7 @@ const MainPage = ({ theme }: Props) => {
   }, [goToCircuit, eventValue]);
 
   useEffect(() => {
-    setSelectedDriver("");
+    setSelectedDriver(driversEmptyOption);
   }, [eventValue]);
 
   useEffect(() => {
@@ -80,13 +84,13 @@ const MainPage = ({ theme }: Props) => {
       res.map((row) => row?.Driver?.driverId) ?? [];
     setModifiedDrivers(
       allDrivers.filter((driver) =>
-        driverIdsInSelectedRace?.includes(driver.driverId)
+        driverIdsInSelectedRace?.includes(driver.driverRef)
       )
     );
   }, [selectedRaceData]);
 
   useEffect(() => {
-    if (selectedDriver == "") {
+    if (selectedDriver.id == "") {
       setModifiedRaceData(selectedRaceData);
       return;
     }
@@ -95,7 +99,7 @@ const MainPage = ({ theme }: Props) => {
 
     const filteredResults = getResultFromObjectBasedOnEventType(
       selectedRaceData
-    ).filter((row) => row.Driver.driverId === selectedDriver);
+    ).filter((row) => row.Driver.driverId === selectedDriver.id);
 
     const { Results, SprintResults, QualifyingResults, ...rest } = Races[0];
     setModifiedRaceData({
@@ -146,7 +150,6 @@ const MainPage = ({ theme }: Props) => {
               allOptions={eventOptions}
               handleSelectChange={handleChangeEvent}
               label="Event Type"
-              useDefault={true}
               val={eventOptions?.find((element) => element.id === eventValue)}
             />
           </Grid>
@@ -155,7 +158,6 @@ const MainPage = ({ theme }: Props) => {
               allOptions={allYearOptions}
               handleSelectChange={handleChangeYear}
               label="Years"
-              useDefault={true}
               val={allYearOptions?.find(
                 (element) => element.label === year.toString()
               )}
@@ -166,18 +168,14 @@ const MainPage = ({ theme }: Props) => {
               allOptions={allTrackOptions}
               handleSelectChange={handleSelectChangeCircuit}
               label="Tracks"
-              useDefault={true}
               val={allTrackOptions[goToCircuit]}
             />
           </Grid>
           <Grid item xs={3}>
-            <F1AutoComplete
-              allOptions={allDriverOptions}
-              handleSelectChange={handleSelectChangeDriver}
-              val={allDriverOptions?.find(
-                (element) => element.id === selectedDriver
-              )}
-              label="Driver"
+            <DriverAutoComplete
+              modifiedDrivers={modifiedDrivers}
+              selectedDriver={selectedDriver}
+              setSelectedDriver={setSelectedDriver}
             />
           </Grid>
           <Grid item xs={12}>

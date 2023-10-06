@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "./App.css";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { CssBaseline, useMediaQuery } from "@mui/material";
@@ -8,8 +8,19 @@ import ResponsiveAppBar from "./components/Navbar/NavBar";
 import Footer from "./components/footer/Footer";
 import { Analytics } from "@vercel/analytics/react";
 import StandingsPage from "./pages/StandingPage";
+import { Driver } from "./types/driver";
+import { get } from "http";
+import { getDriversFromApi } from "./service/driverService";
 
 function App() {
+  const [drivers, setDrivers] = React.useState<Driver[]>();
+
+  useEffect(() => {
+    getDriversFromApi().then((drivers) => {
+      setDrivers(drivers?.drivers);
+    });
+  }, []);
+
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
   const isMobileMatch = useMediaQuery("(max-width:600px)");
 
@@ -44,7 +55,10 @@ function App() {
         <ResponsiveAppBar theme={theme} colorMode={colorMode} />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<MainPage theme={theme} />} />
+            <Route
+              path="/"
+              element={<MainPage theme={theme} drivers={drivers} />}
+            />
             <Route
               path="/standings"
               element={<StandingsPage theme={theme} />}
