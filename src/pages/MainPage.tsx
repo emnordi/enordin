@@ -1,70 +1,74 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Box, Grid, Theme } from "@mui/material";
 import MapCarousel from "../components/carousel/Carousel";
-import DataTable from "../components/table/DataTable";
 import F1AutoComplete, {
   driversEmptyOption,
 } from "../components/autocomplete/F1AutoComplete";
 import { yearCircuitMap } from "../components/F1Data/YearCircuitMap";
-import DataTableQuali from "../components/table/DataTableQuali";
 import useStateHelper from "./useStateHelper";
 import { CircuitFE } from "../types/CircruitFE";
 import { yearSprintRaceMap } from "../components/F1Data/SprintRaces";
 import { Driver } from "../types/driver";
 import DriverAutoComplete from "../components/autocomplete/DriverAutoComplete";
+import { Season } from "../types/season";
+import SeasonAutoComplete from "../components/autocomplete/SeasonAutoComplete";
+import ResultSection from "../components/resultSection/ResultSection";
+import { getResultFromObjectBasedOnEventType } from "../components/resultSection/resultSectionUtils";
 
 interface Props {
   theme: Theme;
   drivers?: Driver[];
+  seasons?: Season[];
 }
 
-const MainPage = ({ theme, drivers }: Props) => {
+const MainPage = ({ theme, drivers, seasons }: Props) => {
   const {
     goToCircuit,
     setGoToCircuit,
     selectedDriver,
     setSelectedDriver,
     selectedRaceData,
-    modifiedRaceData,
-    setModifiedRaceData,
-    year,
+    selectedSeason,
+    setSelectedSeason,
     allCircuits,
     allCircuitsForYear,
     setAllCircuitsForYear,
-    allDrivers,
-    modifiedDrivers,
-    setModifiedDrivers,
     eventValue,
     getF1Data,
     allTrackOptions,
-    allYearOptions,
     allEventOptions,
     handleSelectChangeCircuit,
-    handleChangeYear,
     handleChangeEvent,
-    getResultFromObjectBasedOnEventType,
     eventOptions,
     setEventOptions,
-  } = useStateHelper(drivers ?? []);
+  } = useStateHelper();
+
+  const [modifiedDrivers, setModifiedDrivers] = useState(drivers);
+
+  useEffect(() => {
+    !modifiedDrivers && setModifiedDrivers(drivers);
+  }, [drivers]);
 
   // Effects
   useEffect(() => {
     const circuits: CircuitFE[] = [];
-    yearCircuitMap.get(year.toString())?.forEach((value) => {
+    yearCircuitMap.get(selectedSeason.id)?.forEach((value) => {
       const c = allCircuits.find((circuit) => circuit?.circuitId === value);
       if (c != null) circuits.push(c);
     });
 
     const filteredCircuits = allCircuits.filter((circuit) =>
-      yearCircuitMap.get(year.toString())?.includes(circuit?.circuitId)
+      yearCircuitMap.get(selectedSeason.id)?.includes(circuit?.circuitId)
     );
     setAllCircuitsForYear(circuits);
     getF1Data(filteredCircuits[0]?.circuitId);
-  }, [year]);
+  }, [selectedSeason]);
 
   useEffect(() => {
     const selectedCircuitId = allCircuitsForYear[goToCircuit]?.circuitId;
-    if (!yearSprintRaceMap.get(year.toString())?.includes(selectedCircuitId)) {
+    if (
+      !yearSprintRaceMap.get(selectedSeason.id)?.includes(selectedCircuitId)
+    ) {
       setEventOptions(eventOptions.filter((option) => option.id !== "sprint"));
       eventValue === "sprint" && handleChangeEvent("results");
     } else {
@@ -78,46 +82,20 @@ const MainPage = ({ theme, drivers }: Props) => {
   }, [eventValue]);
 
   useEffect(() => {
-    setModifiedRaceData(selectedRaceData);
-    const res = getResultFromObjectBasedOnEventType(selectedRaceData);
+    const res = getResultFromObjectBasedOnEventType(
+      selectedRaceData,
+      eventValue
+    );
+
     const driverIdsInSelectedRace: string[] =
       res.map((row) => row?.Driver?.driverId) ?? [];
+
     setModifiedDrivers(
-      allDrivers.filter((driver) =>
+      drivers?.filter((driver) =>
         driverIdsInSelectedRace?.includes(driver.driverRef)
       )
     );
   }, [selectedRaceData]);
-
-  useEffect(() => {
-    if (selectedDriver.id == "") {
-      setModifiedRaceData(selectedRaceData);
-      return;
-    }
-
-    const { season, circuitId, Races } = selectedRaceData;
-
-    const filteredResults = getResultFromObjectBasedOnEventType(
-      selectedRaceData
-    ).filter((row) => row.Driver.driverId === selectedDriver.id);
-
-    const { Results, SprintResults, QualifyingResults, ...rest } = Races[0];
-    setModifiedRaceData({
-      season,
-      circuitId,
-      Races: [
-        {
-          Results: filteredResults,
-          SprintResults: filteredResults,
-          QualifyingResults: filteredResults,
-          ...rest,
-        },
-      ],
-    });
-  }, [selectedDriver]);
-
-  const selectedRaceResults =
-    getResultFromObjectBasedOnEventType(modifiedRaceData);
 
   return (
     <>
@@ -154,13 +132,10 @@ const MainPage = ({ theme, drivers }: Props) => {
             />
           </Grid>
           <Grid item xs={3}>
-            <F1AutoComplete
-              allOptions={allYearOptions}
-              handleSelectChange={handleChangeYear}
-              label="Years"
-              val={allYearOptions?.find(
-                (element) => element.label === year.toString()
-              )}
+            <SeasonAutoComplete
+              seasons={seasons ?? []}
+              selectedSeason={selectedSeason}
+              setSelectedSeason={setSelectedSeason}
             />
           </Grid>
           <Grid item xs={3}>
@@ -173,26 +148,21 @@ const MainPage = ({ theme, drivers }: Props) => {
           </Grid>
           <Grid item xs={3}>
             <DriverAutoComplete
-              modifiedDrivers={modifiedDrivers}
+              modifiedDrivers={modifiedDrivers ?? []}
               selectedDriver={selectedDriver}
               setSelectedDriver={setSelectedDriver}
             />
           </Grid>
           <Grid item xs={12}>
-            {eventValue === "qualifying" && (
-              <DataTableQuali
-                selectedRaceData={selectedRaceResults}
-                notFound={`No qualifying available for ${allCircuits[goToCircuit]?.name} in ${year} or selected driver`}
-                theme={theme}
-              />
-            )}
-            {eventValue !== "qualifying" && (
-              <DataTable
-                selectedRaceData={selectedRaceResults}
-                notFound={`No results available for ${allCircuits[goToCircuit]?.name} in ${year} or selected driver`}
-                theme={theme}
-              />
-            )}
+            <ResultSection
+              eventValue={eventValue}
+              allCircuits={allCircuits}
+              goToCircuit={goToCircuit}
+              selectedSeason={selectedSeason}
+              selectedRaceData={selectedRaceData}
+              theme={theme}
+              selectedDriver={selectedDriver}
+            />
           </Grid>
         </Grid>
       </Box>

@@ -9,13 +9,15 @@ import F1AutoComplete, {
 } from "../components/autocomplete/F1AutoComplete";
 import useStateHelper from "./useStateHelper";
 import { yearCircuitMap } from "../components/F1Data/YearCircuitMap";
-import { set } from "date-fns";
+import { Season } from "../types/season";
+import SeasonAutoComplete from "../components/autocomplete/SeasonAutoComplete";
 
 interface Props {
   theme: Theme;
+  seasons?: Season[];
 }
 
-const StandingsPage = ({ theme }: Props) => {
+const StandingsPage = ({ theme, seasons }: Props) => {
   const [value, setValue] = React.useState(0);
 
   const [numberOfRaces, setNumberOfRaces] = React.useState<number>(0);
@@ -35,7 +37,7 @@ const StandingsPage = ({ theme }: Props) => {
     setRound(Number(newRound));
   };
 
-  const { year, allYearOptions, handleChangeYear } = useStateHelper([]);
+  const { selectedSeason, setSelectedSeason } = useStateHelper();
 
   const [standingsData, setStandingsData] = React.useState<StandingsList>();
 
@@ -48,7 +50,12 @@ const StandingsPage = ({ theme }: Props) => {
   };
 
   const getStandingsData = async (signal: AbortSignal) => {
-    const data = await getStandings(year, value === 0, round, signal);
+    const data = await getStandings(
+      selectedSeason.id,
+      value === 0,
+      round,
+      signal
+    );
     setStandingsData(formatData(data));
   };
 
@@ -61,29 +68,26 @@ const StandingsPage = ({ theme }: Props) => {
         abortController.abort();
       }
     };
-  }, [value, year, round]);
+  }, [value, selectedSeason, round]);
 
   useEffect(() => {
     const newYearNumberOfRaces: number =
-      yearCircuitMap.get(year.toString())?.length ?? 0;
+      yearCircuitMap.get(selectedSeason.id)?.length ?? 0;
 
     setNumberOfRaces(newYearNumberOfRaces);
     if (newYearNumberOfRaces < round) {
       setRound(0);
     }
-  }, [year]);
+  }, [selectedSeason]);
 
   return (
     <Box sx={{ width: "80%", margin: "0 auto", paddingTop: "5%" }}>
       <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
         <Grid item xs={6}>
-          <F1AutoComplete
-            allOptions={allYearOptions}
-            handleSelectChange={handleChangeYear}
-            label="Years"
-            val={allYearOptions?.find(
-              (element) => element.label === year.toString()
-            )}
+          <SeasonAutoComplete
+            seasons={seasons ?? []}
+            selectedSeason={selectedSeason}
+            setSelectedSeason={setSelectedSeason}
           />
         </Grid>
         <Grid item xs={6}>

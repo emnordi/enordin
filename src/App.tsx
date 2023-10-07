@@ -9,15 +9,36 @@ import Footer from "./components/footer/Footer";
 import { Analytics } from "@vercel/analytics/react";
 import StandingsPage from "./pages/StandingPage";
 import { Driver } from "./types/driver";
-import { get } from "http";
 import { getDriversFromApi } from "./service/driverService";
+import { Circuit } from "./types/circuit";
+import { Season } from "./types/season";
+import { getSeasonsFromApi } from "./service/seasonService";
+import { getCircuitsFromApi } from "./service/circuitService";
 
 function App() {
   const [drivers, setDrivers] = React.useState<Driver[]>();
 
+  const [circuits, setCircuits] = React.useState<Circuit[]>();
+
+  const [seasons, setSeasons] = React.useState<Season[]>();
+
   useEffect(() => {
     getDriversFromApi().then((drivers) => {
-      setDrivers(drivers?.drivers);
+      setDrivers(
+        drivers?.drivers.sort((a, b) => a.surname.localeCompare(b.surname))
+      );
+    });
+  }, []);
+
+  useEffect(() => {
+    getSeasonsFromApi().then((seasons) => {
+      setSeasons(seasons?.seasons.sort((a, b) => b.year - a.year));
+    });
+  }, []);
+
+  useEffect(() => {
+    getCircuitsFromApi().then((circuits) => {
+      setCircuits(circuits?.circuits);
     });
   }, []);
 
@@ -31,7 +52,6 @@ function App() {
   const colorMode = React.useMemo(
     () => ({
       toggleColorMode: () => {
-        console.log("hello");
         setMode((prevMode) => (prevMode === "light" ? "dark" : "light"));
       },
     }),
@@ -57,11 +77,13 @@ function App() {
           <Routes>
             <Route
               path="/"
-              element={<MainPage theme={theme} drivers={drivers} />}
+              element={
+                <MainPage theme={theme} drivers={drivers} seasons={seasons} />
+              }
             />
             <Route
               path="/standings"
-              element={<StandingsPage theme={theme} />}
+              element={<StandingsPage theme={theme} seasons={seasons} />}
             />
           </Routes>
         </BrowserRouter>

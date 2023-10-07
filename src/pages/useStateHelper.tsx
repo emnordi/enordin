@@ -7,9 +7,9 @@ import {
   AutoCompleteOptions,
   driversEmptyOption,
 } from "../components/autocomplete/F1AutoComplete";
-import { Driver } from "../types/driver";
+import { seasonDefaultOption } from "../components/autocomplete/SeasonAutoComplete";
 
-const useStateHelper = (drivers: Driver[]) => {
+const useStateHelper = () => {
   const [goToCircuit, setGoToCircuit] = useState(0);
   const [selectedDriver, setSelectedDriver] =
     useState<AutoCompleteOptions>(driversEmptyOption);
@@ -18,13 +18,10 @@ const useStateHelper = (drivers: Driver[]) => {
     circuitId: "",
     Races: [],
   });
-  const [modifiedRaceData, setModifiedRaceData] =
-    useState<RaceTable>(selectedRaceData);
-  const [year, setYear] = useState(2023);
+  const [selectedSeason, setSelectedSeason] =
+    useState<AutoCompleteOptions>(seasonDefaultOption);
   const allCircuits: CircuitFE[] = Circuits();
   const [allCircuitsForYear, setAllCircuitsForYear] = useState(allCircuits);
-  const allDrivers = drivers.sort((a, b) => a.surname.localeCompare(b.surname));
-  const [modifiedDrivers, setModifiedDrivers] = useState(allDrivers);
   const [eventValue, setEventValue] = useState("results");
 
   const allEventOptions: AutoCompleteOptions[] = [
@@ -35,14 +32,10 @@ const useStateHelper = (drivers: Driver[]) => {
 
   const [eventOptions, setEventOptions] = useState(allEventOptions);
 
-  const years = Array.from(Array(2023 - 1950 + 1).keys()).map(
-    (element) => 2023 - element
-  );
-
   // Fetch F1 data from the API
   const getF1Data = async (circuitId: string) => {
     const data: RaceTable = formatData(
-      await getF1DataFromApi(year, circuitId, eventValue)
+      await getF1DataFromApi(selectedSeason?.id, circuitId, eventValue)
     );
     setSelectedRaceData(data);
   };
@@ -56,12 +49,8 @@ const useStateHelper = (drivers: Driver[]) => {
     setGoToCircuit(indexOfCircuit);
   };
 
-  const handleChangeYear = (newYear: string) => {
-    setYear(Number(newYear));
-  };
-
   const handleChangeEvent = (choice: string) => {
-    setEventValue(choice);
+    setEventValue(choice ?? "results");
   };
 
   // Format F1 data
@@ -77,58 +66,23 @@ const useStateHelper = (drivers: Driver[]) => {
     })
   );
 
-  // Options for year selection
-  const allYearOptions: AutoCompleteOptions[] = years.map((element, index) => ({
-    label: element.toString(),
-    id: element.toString(),
-  }));
-
-  const getResultFromObjectBasedOnEventType = (
-    raceData: RaceTable
-  ): Result[] => {
-    let results: Result[] = [];
-    switch (eventValue) {
-      case "qualifying": {
-        results = raceData?.Races[0]?.QualifyingResults ?? [];
-        break;
-      }
-      case "sprint": {
-        results = raceData?.Races[0]?.SprintResults ?? [];
-        break;
-      }
-      default: {
-        results = raceData?.Races[0]?.Results ?? [];
-        break;
-      }
-    }
-
-    return results;
-  };
-
   return {
     goToCircuit,
     setGoToCircuit,
     selectedDriver,
     setSelectedDriver,
     selectedRaceData,
-    modifiedRaceData,
-    setModifiedRaceData,
-    year,
+    selectedSeason,
+    setSelectedSeason,
     allCircuits,
     allCircuitsForYear,
     setAllCircuitsForYear,
-    allDrivers,
-    modifiedDrivers,
-    setModifiedDrivers,
     eventValue,
     getF1Data,
     allTrackOptions,
-    allYearOptions,
     allEventOptions,
     handleSelectChangeCircuit,
-    handleChangeYear,
     handleChangeEvent,
-    getResultFromObjectBasedOnEventType,
     eventOptions,
     setEventOptions,
   };

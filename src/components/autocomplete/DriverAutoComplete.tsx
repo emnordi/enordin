@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Driver } from "../../types/driver";
 import F1AutoComplete, {
   AutoCompleteOptions,
@@ -15,14 +16,20 @@ const DriverAutoComplete = ({
   selectedDriver,
   setSelectedDriver,
 }: Props) => {
-  const allDriverOptions: AutoCompleteOptions[] = [
-    { label: "Chose a driver to see only their results", id: "" },
-  ].concat(
-    modifiedDrivers.map((element, index) => ({
-      label: `${element.forename} ${element.surname}`,
-      id: element.driverRef,
-    }))
-  );
+  const [allDriverOptions, setAllDriverOptions] = useState<
+    AutoCompleteOptions[]
+  >([driversEmptyOption]);
+
+  useEffect(() => {
+    setAllDriverOptions(
+      [driversEmptyOption].concat(
+        modifiedDrivers.map((element, index) => ({
+          label: `${element.forename} ${element.surname}`,
+          id: element.driverRef,
+        }))
+      )
+    );
+  }, [modifiedDrivers]);
 
   const handleSelectChangeDriver = (driverId: string) => {
     setSelectedDriver(

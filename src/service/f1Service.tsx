@@ -4,7 +4,7 @@ import { Root, StandingsRoot } from "../types/F1Data";
 // "https://ergast.com/api/f1/" + season + "/results.json"
 
 export async function getF1DataFromApi(
-  season: number,
+  season: string,
   circuitId: string,
   eventType: string
 ): Promise<Root> {
@@ -26,7 +26,7 @@ export async function getTrackOrder(season: number): Promise<Root> {
 }
 
 export async function getStandings(
-  season: number,
+  season: string,
   driverStandings: boolean,
   round?: number,
   signal?: AbortSignal
@@ -35,8 +35,6 @@ export async function getStandings(
     ? "driverStandings"
     : "constructorStandings";
   const roundParam = round ? round + "/" : "";
-  // http://ergast.com/api/f1/2008/5/driverStandings.json
-  // https://ergast.com/api/f1/2022/constructorStandings.json
   const response = await fetch(
     "https://ergast.com/api/f1/" +
       season +

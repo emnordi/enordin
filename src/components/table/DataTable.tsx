@@ -4,18 +4,22 @@ import {
   Table,
   TableHead,
   TableRow,
-  TableCell,
   TableBody,
   Theme,
 } from "@mui/material";
 import { Result } from "../../types/F1Data";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
+import { QualifyingRows } from "./QualifyingRows";
+import { RaceRows } from "./RaceRows";
+import { RaceColumns } from "./RaceColumns";
+import { QualifyingColumns } from "./QualifyingColumns";
 
 interface Props {
   selectedRaceData: Result[];
   notFound: string;
   theme: Theme;
+  eventValue: string;
 }
 
 const getArrow = (position: number) => {
@@ -32,7 +36,12 @@ const getArrow = (position: number) => {
   }
 };
 
-const DataTable = ({ selectedRaceData, notFound, theme }: Props) => {
+const DataTable = ({
+  selectedRaceData,
+  notFound,
+  theme,
+  eventValue,
+}: Props) => {
   const showData: boolean =
     selectedRaceData != null && selectedRaceData?.length > 0;
 
@@ -46,44 +55,26 @@ const DataTable = ({ selectedRaceData, notFound, theme }: Props) => {
                 th: { fontWeight: "bold", fontSize: "1em" },
               }}
             >
-              <TableCell align="left">Position</TableCell>
-              <TableCell align="left">Driver</TableCell>
-              <TableCell align="left">Starting Position</TableCell>
-              <TableCell align="left">Positions Gained</TableCell>
-              <TableCell align="left">Fastest Lap</TableCell>
-              <TableCell align="left">Nationality</TableCell>
-              <TableCell align="left">Constructor</TableCell>
+              {eventValue === "qualifying" ? (
+                <QualifyingColumns />
+              ) : (
+                <RaceColumns />
+              )}
             </TableRow>
           </TableHead>
           <TableBody>
-            {selectedRaceData.map((row) => (
-              <TableRow
-                key={row?.position}
-                sx={{
-                  "&:last-child td, &:last-child th": { border: 0 },
-                  "&:nth-of-type(odd)": {
-                    backgroundColor: theme.palette.action.hover,
-                  },
-                }}
-              >
-                <TableCell align="left" sx={{ paddingLeft: "3%" }}>
-                  {row?.position}
-                </TableCell>
-                <TableCell align="left">
-                  {row?.Driver?.givenName + " " + row?.Driver?.familyName}
-                </TableCell>
-                <TableCell align="left" sx={{ paddingLeft: "5%" }}>
-                  {row?.grid}
-                </TableCell>
-                <TableCell align="left" sx={{ paddingLeft: "5%" }}>
-                  {+row?.grid - +row?.position}
-                  {getArrow(+row?.grid - +row?.position)}
-                </TableCell>
-                <TableCell align="left">{row.FastestLap?.Time?.time}</TableCell>
-                <TableCell align="left">{row?.Driver?.nationality}</TableCell>
-                <TableCell align="left">{row?.Constructor?.name}</TableCell>
-              </TableRow>
-            ))}
+            {eventValue === "qualifying" ? (
+              <QualifyingRows
+                selectedRaceData={selectedRaceData}
+                theme={theme}
+              />
+            ) : (
+              <RaceRows
+                selectedRaceData={selectedRaceData}
+                theme={theme}
+                getArrow={getArrow}
+              />
+            )}
           </TableBody>
         </Table>
       )}
