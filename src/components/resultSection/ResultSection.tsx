@@ -1,5 +1,4 @@
 import { Theme } from "@mui/material";
-import { CircuitFE } from "../../types/CircruitFE";
 import { RaceTable, Result } from "../../types/F1Data";
 import { AutoCompleteOptions } from "../autocomplete/F1AutoComplete";
 import DataTable from "../table/DataTable";
@@ -8,21 +7,19 @@ import { useEffect, useState } from "react";
 
 interface Props {
   eventValue: string;
-  allCircuits: CircuitFE[];
-  goToCircuit: number;
   selectedSeason: AutoCompleteOptions;
   selectedRaceData: RaceTable;
   theme: Theme;
   selectedDriver: AutoCompleteOptions;
+  selectedCircuit: AutoCompleteOptions;
 }
 const ResultSection = ({
   eventValue,
-  allCircuits,
-  goToCircuit,
   selectedSeason,
   selectedRaceData,
   theme,
   selectedDriver,
+  selectedCircuit,
 }: Props) => {
   const [raceDataResults, setRaceDataResults] = useState<Result[]>(
     getResultFromObjectBasedOnEventType(selectedRaceData, eventValue)
@@ -30,8 +27,8 @@ const ResultSection = ({
 
   const notFound =
     eventValue === "Qualifying"
-      ? `No qualifying available for ${allCircuits[goToCircuit]?.name} in ${selectedSeason.id} or selected driver`
-      : `No results available for ${allCircuits[goToCircuit]?.name} in ${selectedSeason.id} or selected driver`;
+      ? `No qualifying available for ${selectedCircuit?.label} in ${selectedSeason.id} or selected driver`
+      : `No results available for ${selectedCircuit?.label} in ${selectedSeason.id} or selected driver`;
 
   useEffect(() => {
     setRaceDataResults(

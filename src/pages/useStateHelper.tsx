@@ -1,13 +1,12 @@
 import { useState } from "react";
 import { RaceTable, Result, Root } from "../types/F1Data";
-import Circuits from "../components/F1Data/Circuits";
-import { CircuitFE } from "../types/CircruitFE";
 import { getF1DataFromApi } from "../service/f1Service";
 import {
   AutoCompleteOptions,
   driversEmptyOption,
 } from "../components/autocomplete/F1AutoComplete";
 import { seasonDefaultOption } from "../components/autocomplete/SeasonAutoComplete";
+import { circuitDefaultOption } from "../components/autocomplete/CircuitAutoComplete";
 
 const useStateHelper = () => {
   const [goToCircuit, setGoToCircuit] = useState(0);
@@ -20,8 +19,6 @@ const useStateHelper = () => {
   });
   const [selectedSeason, setSelectedSeason] =
     useState<AutoCompleteOptions>(seasonDefaultOption);
-  const allCircuits: CircuitFE[] = Circuits();
-  const [allCircuitsForYear, setAllCircuitsForYear] = useState(allCircuits);
   const [eventValue, setEventValue] = useState("results");
 
   const allEventOptions: AutoCompleteOptions[] = [
@@ -40,15 +37,6 @@ const useStateHelper = () => {
     setSelectedRaceData(data);
   };
 
-  // Event handlers
-  const handleSelectChangeCircuit = (circuitId: string) => {
-    const selected = allCircuitsForYear.find(
-      (element) => element?.circuitId === circuitId
-    );
-    const indexOfCircuit = selected ? allCircuitsForYear.indexOf(selected) : 0;
-    setGoToCircuit(indexOfCircuit);
-  };
-
   const handleChangeEvent = (choice: string) => {
     setEventValue(choice ?? "results");
   };
@@ -58,14 +46,6 @@ const useStateHelper = () => {
     return data?.MRData?.RaceTable;
   };
 
-  // Options for track selection
-  const allTrackOptions: AutoCompleteOptions[] = allCircuitsForYear.map(
-    (element, index) => ({
-      label: element.name,
-      id: element.circuitId,
-    })
-  );
-
   return {
     goToCircuit,
     setGoToCircuit,
@@ -74,14 +54,9 @@ const useStateHelper = () => {
     selectedRaceData,
     selectedSeason,
     setSelectedSeason,
-    allCircuits,
-    allCircuitsForYear,
-    setAllCircuitsForYear,
     eventValue,
     getF1Data,
-    allTrackOptions,
     allEventOptions,
-    handleSelectChangeCircuit,
     handleChangeEvent,
     eventOptions,
     setEventOptions,

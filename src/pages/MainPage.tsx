@@ -2,11 +2,11 @@ import { useEffect, useState } from "react";
 import { Box, Grid, Theme } from "@mui/material";
 import MapCarousel from "../components/carousel/Carousel";
 import F1AutoComplete, {
+  AutoCompleteOptions,
   driversEmptyOption,
 } from "../components/autocomplete/F1AutoComplete";
 import { yearCircuitMap } from "../components/F1Data/YearCircuitMap";
 import useStateHelper from "./useStateHelper";
-import { CircuitFE } from "../types/CircruitFE";
 import { yearSprintRaceMap } from "../components/F1Data/SprintRaces";
 import { Driver } from "../types/driver";
 import DriverAutoComplete from "../components/autocomplete/DriverAutoComplete";
@@ -14,68 +14,84 @@ import { Season } from "../types/season";
 import SeasonAutoComplete from "../components/autocomplete/SeasonAutoComplete";
 import ResultSection from "../components/resultSection/ResultSection";
 import { getResultFromObjectBasedOnEventType } from "../components/resultSection/resultSectionUtils";
+import { Circuit } from "../types/circuit";
+import CircuitAutoComplete, {
+  circuitToAutoCompleteOption,
+} from "../components/autocomplete/CircuitAutoComplete";
 
 interface Props {
   theme: Theme;
-  drivers?: Driver[];
-  seasons?: Season[];
+  drivers: Driver[];
+  seasons: Season[];
+  circuits: Circuit[];
 }
 
-const MainPage = ({ theme, drivers, seasons }: Props) => {
+const MainPage = ({ theme, drivers, seasons, circuits }: Props) => {
   const {
-    goToCircuit,
-    setGoToCircuit,
     selectedDriver,
     setSelectedDriver,
     selectedRaceData,
     selectedSeason,
     setSelectedSeason,
-    allCircuits,
-    allCircuitsForYear,
-    setAllCircuitsForYear,
     eventValue,
     getF1Data,
-    allTrackOptions,
     allEventOptions,
-    handleSelectChangeCircuit,
     handleChangeEvent,
     eventOptions,
     setEventOptions,
   } = useStateHelper();
 
-  const [modifiedDrivers, setModifiedDrivers] = useState(drivers);
+  const [modifiedDrivers, setModifiedDrivers] = useState<Driver[]>(drivers);
+
+  const [circuitsForYear, setCircuitsForYear] = useState<Circuit[]>(circuits);
+
+  const [selectedCircuit, setSelectedCircuit] = useState<
+    AutoCompleteOptions | undefined
+  >();
 
   useEffect(() => {
-    !modifiedDrivers && setModifiedDrivers(drivers);
+    modifiedDrivers?.length === 0 && setModifiedDrivers(drivers);
   }, [drivers]);
+
+  const setCircuitsInOrder = () => {
+    const circuitsOrdered: Circuit[] = [];
+    yearCircuitMap.get(selectedSeason.id)?.forEach((value) => {
+      const c = circuits.find((circuit) => circuit?.circuitRef === value);
+      if (c != null) circuitsOrdered.push(c);
+    });
+    setCircuitsForYear(circuitsOrdered);
+    getF1Data(circuitsOrdered[0]?.circuitRef);
+  };
+
+  useEffect(() => {
+    if (circuitsForYear?.length === 0) {
+      setCircuitsInOrder();
+    }
+  }, [circuits]);
+
+  useEffect(() => {
+    !selectedCircuit &&
+      circuitsForYear?.length > 0 &&
+      setSelectedCircuit(circuitToAutoCompleteOption(circuitsForYear[0]));
+  }, [circuitsForYear]);
 
   // Effects
   useEffect(() => {
-    const circuits: CircuitFE[] = [];
-    yearCircuitMap.get(selectedSeason.id)?.forEach((value) => {
-      const c = allCircuits.find((circuit) => circuit?.circuitId === value);
-      if (c != null) circuits.push(c);
-    });
-
-    const filteredCircuits = allCircuits.filter((circuit) =>
-      yearCircuitMap.get(selectedSeason.id)?.includes(circuit?.circuitId)
-    );
-    setAllCircuitsForYear(circuits);
-    getF1Data(filteredCircuits[0]?.circuitId);
+    setCircuitsInOrder();
   }, [selectedSeason]);
 
   useEffect(() => {
-    const selectedCircuitId = allCircuitsForYear[goToCircuit]?.circuitId;
     if (
-      !yearSprintRaceMap.get(selectedSeason.id)?.includes(selectedCircuitId)
+      selectedCircuit &&
+      !yearSprintRaceMap.get(selectedSeason.id)?.includes(selectedCircuit.id)
     ) {
       setEventOptions(eventOptions.filter((option) => option.id !== "sprint"));
       eventValue === "sprint" && handleChangeEvent("results");
     } else {
       setEventOptions(allEventOptions);
     }
-    getF1Data(selectedCircuitId);
-  }, [goToCircuit, eventValue]);
+    getF1Data(selectedCircuit?.id ?? circuitsForYear[0]?.circuitRef);
+  }, [selectedCircuit, eventValue]);
 
   useEffect(() => {
     setSelectedDriver(driversEmptyOption);
@@ -104,15 +120,17 @@ const MainPage = ({ theme, drivers, seasons }: Props) => {
           marginTop: "180px",
         }}
       >
-        <MapCarousel
-          height={"230px"}
-          width={"50%"}
-          margin={"0 auto"}
-          offset={4}
-          goToSlide={goToCircuit}
-          setGoToSlide={setGoToCircuit}
-          allCircuits={allCircuitsForYear}
-        />
+        {selectedCircuit && (
+          <MapCarousel
+            height={"230px"}
+            width={"50%"}
+            margin={"0 auto"}
+            offset={4}
+            circuits={circuitsForYear}
+            selectedCircuit={selectedCircuit}
+            setSelectedCircuit={setSelectedCircuit}
+          />
+        )}
       </Box>
 
       <Box
@@ -139,30 +157,32 @@ const MainPage = ({ theme, drivers, seasons }: Props) => {
             />
           </Grid>
           <Grid item xs={3}>
-            <F1AutoComplete
-              allOptions={allTrackOptions}
-              handleSelectChange={handleSelectChangeCircuit}
-              label="Tracks"
-              val={allTrackOptions[goToCircuit]}
-            />
+            {selectedCircuit && (
+              <CircuitAutoComplete
+                circuits={circuitsForYear}
+                selectedCircuit={selectedCircuit}
+                setSelectedCircuit={setSelectedCircuit}
+              />
+            )}
           </Grid>
           <Grid item xs={3}>
             <DriverAutoComplete
-              modifiedDrivers={modifiedDrivers ?? []}
+              modifiedDrivers={modifiedDrivers}
               selectedDriver={selectedDriver}
               setSelectedDriver={setSelectedDriver}
             />
           </Grid>
           <Grid item xs={12}>
-            <ResultSection
-              eventValue={eventValue}
-              allCircuits={allCircuits}
-              goToCircuit={goToCircuit}
-              selectedSeason={selectedSeason}
-              selectedRaceData={selectedRaceData}
-              theme={theme}
-              selectedDriver={selectedDriver}
-            />
+            {selectedCircuit && (
+              <ResultSection
+                eventValue={eventValue}
+                selectedSeason={selectedSeason}
+                selectedRaceData={selectedRaceData}
+                theme={theme}
+                selectedDriver={selectedDriver}
+                selectedCircuit={selectedCircuit}
+              />
+            )}
           </Grid>
         </Grid>
       </Box>

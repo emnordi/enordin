@@ -1,17 +1,21 @@
 import Carousel from "react-spring-3d-carousel";
-import { SetStateAction, TouchEventHandler, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { config } from "@react-spring/web";
-import { CircuitFE } from "../../types/CircruitFE";
 import Cards from "./Cards";
+import { Circuit } from "../../types/circuit";
+import { AutoCompleteOptions } from "../autocomplete/F1AutoComplete";
+import { circuitToAutoCompleteOption } from "../autocomplete/CircuitAutoComplete";
 
 interface Props {
   offset: number;
   width: string;
   height: string;
   margin: string;
-  goToSlide: number;
-  setGoToSlide: React.Dispatch<React.SetStateAction<number>>;
-  allCircuits: CircuitFE[];
+  circuits: Circuit[];
+  selectedCircuit: AutoCompleteOptions;
+  setSelectedCircuit: React.Dispatch<
+    React.SetStateAction<AutoCompleteOptions | undefined>
+  >;
 }
 
 const MapCarousel = ({
@@ -19,9 +23,9 @@ const MapCarousel = ({
   width,
   height,
   margin,
-  goToSlide,
-  setGoToSlide,
-  allCircuits,
+  circuits,
+  selectedCircuit,
+  setSelectedCircuit,
 }: Props): JSX.Element => {
   const [cards, setCards] = useState<
     {
@@ -32,15 +36,23 @@ const MapCarousel = ({
   >([]);
 
   useEffect(() => {
-    const cardsList = Cards(allCircuits);
+    const cardsList = Cards(circuits);
     const table = cardsList.map((element, index) => {
-      return { ...element, onClick: () => setGoToSlide(index) };
+      const circuit = circuits[index];
+      return {
+        ...element,
+        onClick: () => setSelectedCircuit(circuitToAutoCompleteOption(circuit)),
+      };
     });
     setCards(table);
-  }, [allCircuits]);
+  }, [circuits]);
 
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
+
+  const selectedCircuitIndex = circuits.findIndex(
+    (circuit) => circuit.circuitRef === selectedCircuit.id
+  );
 
   // the required distance between touchStart and touchEnd to be detected as a swipe
   const minSwipeDistance = 50;
@@ -57,8 +69,15 @@ const MapCarousel = ({
     const distance = touchStart - touchEnd;
     const isLeftSwipe = distance > minSwipeDistance;
     const isRightSwipe = distance < -minSwipeDistance;
-    if (isLeftSwipe || isRightSwipe)
-      setGoToSlide(isLeftSwipe ? goToSlide + 1 : goToSlide - 1);
+    if (isLeftSwipe || isRightSwipe) {
+      setSelectedCircuit(
+        circuitToAutoCompleteOption(
+          isLeftSwipe
+            ? circuits[selectedCircuitIndex + 1]
+            : circuits[selectedCircuitIndex - 1]
+        )
+      );
+    }
   };
 
   return (
@@ -71,7 +90,7 @@ const MapCarousel = ({
       {cards?.length > 0 && (
         <Carousel
           slides={cards}
-          goToSlide={goToSlide}
+          goToSlide={selectedCircuitIndex}
           offsetRadius={offset}
           showNavigation={false}
           animationConfig={config.gentle}

@@ -78,7 +78,12 @@ function App() {
             <Route
               path="/"
               element={
-                <MainPage theme={theme} drivers={drivers} seasons={seasons} />
+                <MainPage
+                  theme={theme}
+                  drivers={drivers ?? []}
+                  seasons={seasons ?? []}
+                  circuits={circuits ?? []}
+                />
               }
             />
             <Route
