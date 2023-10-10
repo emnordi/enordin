@@ -1,4 +1,5 @@
-import { Root, StandingsRoot } from "../types/F1Data";
+import { AutoCompleteOptions } from "../components/autocomplete/F1AutoComplete";
+import { RaceTable, Root, StandingsRoot } from "../types/F1Data";
 
 //https://ergast.com/api/f1/<season>/<round>/...
 // "https://ergast.com/api/f1/" + season + "/results.json"
@@ -46,3 +47,20 @@ export async function getStandings(
   );
   return response.json();
 }
+
+// Format F1 data
+const formatData = (data: Root): RaceTable => {
+  return data?.MRData?.RaceTable;
+};
+
+// Fetch F1 data from the API
+export const getF1Data = async (
+  circuitId: string,
+  selectedSeason: AutoCompleteOptions,
+  selectedEvent: AutoCompleteOptions
+) => {
+  const data: RaceTable = formatData(
+    await getF1DataFromApi(selectedSeason?.id, circuitId, selectedEvent?.id)
+  );
+  return data;
+};

@@ -1,23 +1,30 @@
 import { useEffect, useState } from "react";
 import { Box, Grid, Theme } from "@mui/material";
 import MapCarousel from "../components/carousel/Carousel";
-import F1AutoComplete, {
+import {
   AutoCompleteOptions,
   driversEmptyOption,
 } from "../components/autocomplete/F1AutoComplete";
 import { yearCircuitMap } from "../components/F1Data/YearCircuitMap";
-import useStateHelper from "./useStateHelper";
 import { yearSprintRaceMap } from "../components/F1Data/SprintRaces";
 import { Driver } from "../types/driver";
 import DriverAutoComplete from "../components/autocomplete/DriverAutoComplete";
 import { Season } from "../types/season";
-import SeasonAutoComplete from "../components/autocomplete/SeasonAutoComplete";
+import SeasonAutoComplete, {
+  seasonDefaultOption,
+} from "../components/autocomplete/SeasonAutoComplete";
 import ResultSection from "../components/resultSection/ResultSection";
 import { getResultFromObjectBasedOnEventType } from "../components/resultSection/resultSectionUtils";
 import { Circuit } from "../types/circuit";
 import CircuitAutoComplete, {
   circuitToAutoCompleteOption,
 } from "../components/autocomplete/CircuitAutoComplete";
+import useInitialStates from "./hooks/useInitialStates";
+import EventAutoComplete, {
+  eventDefaultOption,
+} from "../components/autocomplete/EventAutoComplete";
+import { getF1Data } from "../service/f1Service";
+import { RaceTable } from "../types/F1Data";
 
 interface Props {
   theme: Theme;
@@ -27,19 +34,15 @@ interface Props {
 }
 
 const MainPage = ({ theme, drivers, seasons, circuits }: Props) => {
-  const {
-    selectedDriver,
-    setSelectedDriver,
-    selectedRaceData,
-    selectedSeason,
-    setSelectedSeason,
-    eventValue,
-    getF1Data,
-    allEventOptions,
-    handleChangeEvent,
-    eventOptions,
-    setEventOptions,
-  } = useStateHelper();
+  const [selectedDriver, setSelectedDriver] =
+    useState<AutoCompleteOptions>(driversEmptyOption);
+  const [selectedRaceData, setSelectedRaceData] = useState<RaceTable>({
+    season: "",
+    circuitId: "",
+    Races: [],
+  });
+  const [selectedSeason, setSelectedSeason] =
+    useState<AutoCompleteOptions>(seasonDefaultOption);
 
   const [modifiedDrivers, setModifiedDrivers] = useState<Driver[]>(drivers);
 
@@ -49,9 +52,14 @@ const MainPage = ({ theme, drivers, seasons, circuits }: Props) => {
     AutoCompleteOptions | undefined
   >();
 
-  useEffect(() => {
-    modifiedDrivers?.length === 0 && setModifiedDrivers(drivers);
-  }, [drivers]);
+  const [selectedEvent, setSelectedEvent] =
+    useState<AutoCompleteOptions>(eventDefaultOption);
+
+  // Fetch F1 data from the API
+  const getData = async (circuitId: string) => {
+    const data = await getF1Data(circuitId, selectedSeason, selectedEvent);
+    setSelectedRaceData(data);
+  };
 
   const setCircuitsInOrder = () => {
     const circuitsOrdered: Circuit[] = [];
@@ -60,14 +68,17 @@ const MainPage = ({ theme, drivers, seasons, circuits }: Props) => {
       if (c != null) circuitsOrdered.push(c);
     });
     setCircuitsForYear(circuitsOrdered);
-    getF1Data(circuitsOrdered[0]?.circuitRef);
+    getData(circuitsOrdered[0]?.circuitRef);
   };
 
-  useEffect(() => {
-    if (circuitsForYear?.length === 0) {
-      setCircuitsInOrder();
-    }
-  }, [circuits]);
+  useInitialStates({
+    circuits,
+    circuitsForYear,
+    setCircuitsInOrder,
+    drivers,
+    modifiedDrivers,
+    setModifiedDrivers,
+  });
 
   useEffect(() => {
     !selectedCircuit &&
@@ -81,26 +92,17 @@ const MainPage = ({ theme, drivers, seasons, circuits }: Props) => {
   }, [selectedSeason]);
 
   useEffect(() => {
-    if (
-      selectedCircuit &&
-      !yearSprintRaceMap.get(selectedSeason.id)?.includes(selectedCircuit.id)
-    ) {
-      setEventOptions(eventOptions.filter((option) => option.id !== "sprint"));
-      eventValue === "sprint" && handleChangeEvent("results");
-    } else {
-      setEventOptions(allEventOptions);
-    }
-    getF1Data(selectedCircuit?.id ?? circuitsForYear[0]?.circuitRef);
-  }, [selectedCircuit, eventValue]);
+    getData(selectedCircuit?.id ?? circuitsForYear[0]?.circuitRef);
+  }, [selectedCircuit, selectedEvent]);
 
   useEffect(() => {
     setSelectedDriver(driversEmptyOption);
-  }, [eventValue]);
+  }, [selectedEvent]);
 
   useEffect(() => {
     const res = getResultFromObjectBasedOnEventType(
       selectedRaceData,
-      eventValue
+      selectedEvent.id
     );
 
     const driverIdsInSelectedRace: string[] =
@@ -142,11 +144,14 @@ const MainPage = ({ theme, drivers, seasons, circuits }: Props) => {
       >
         <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
           <Grid item xs={3}>
-            <F1AutoComplete
-              allOptions={eventOptions}
-              handleSelectChange={handleChangeEvent}
-              label="Event Type"
-              val={eventOptions?.find((element) => element.id === eventValue)}
+            <EventAutoComplete
+              selectedEvent={selectedEvent}
+              setSelectedEvent={setSelectedEvent}
+              sprint={
+                yearSprintRaceMap
+                  .get(selectedSeason.id)
+                  ?.includes(selectedCircuit?.id ?? "") ?? false
+              }
             />
           </Grid>
           <Grid item xs={3}>
@@ -175,7 +180,7 @@ const MainPage = ({ theme, drivers, seasons, circuits }: Props) => {
           <Grid item xs={12}>
             {selectedCircuit && (
               <ResultSection
-                eventValue={eventValue}
+                eventValue={selectedEvent.id}
                 selectedSeason={selectedSeason}
                 selectedRaceData={selectedRaceData}
                 theme={theme}

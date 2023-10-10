@@ -1,5 +1,5 @@
 import { Box, Grid, Tab, Tabs, Theme } from "@mui/material";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { getStandings } from "../service/f1Service";
 import { StandingsList, StandingsRoot } from "../types/F1Data";
 import DriverStandingsTable from "../components/table/DriverStandingsTable";
@@ -7,10 +7,11 @@ import ConstructorStandingsTable from "../components/table/ConstructorStandingsT
 import F1AutoComplete, {
   AutoCompleteOptions,
 } from "../components/autocomplete/F1AutoComplete";
-import useStateHelper from "./useStateHelper";
 import { yearCircuitMap } from "../components/F1Data/YearCircuitMap";
 import { Season } from "../types/season";
-import SeasonAutoComplete from "../components/autocomplete/SeasonAutoComplete";
+import SeasonAutoComplete, {
+  seasonDefaultOption,
+} from "../components/autocomplete/SeasonAutoComplete";
 
 interface Props {
   theme: Theme;
@@ -37,7 +38,8 @@ const StandingsPage = ({ theme, seasons }: Props) => {
     setRound(Number(newRound));
   };
 
-  const { selectedSeason, setSelectedSeason } = useStateHelper();
+  const [selectedSeason, setSelectedSeason] =
+    useState<AutoCompleteOptions>(seasonDefaultOption);
 
   const [standingsData, setStandingsData] = React.useState<StandingsList>();
 
