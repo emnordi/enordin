@@ -4,6 +4,7 @@ import { AutoCompleteOptions } from "../autocomplete/F1AutoComplete";
 import DataTable from "../table/DataTable";
 import { getResultFromObjectBasedOnEventType } from "./resultSectionUtils";
 import { useEffect, useState } from "react";
+import { Race } from "../../types/race";
 
 interface Props {
   eventValue: string;
@@ -11,7 +12,7 @@ interface Props {
   selectedRaceData: RaceTable;
   theme: Theme;
   selectedDriver: AutoCompleteOptions;
-  selectedCircuit: AutoCompleteOptions;
+  selectedRace: Race;
 }
 const ResultSection = ({
   eventValue,
@@ -19,7 +20,7 @@ const ResultSection = ({
   selectedRaceData,
   theme,
   selectedDriver,
-  selectedCircuit,
+  selectedRace,
 }: Props) => {
   const [raceDataResults, setRaceDataResults] = useState<Result[]>(
     getResultFromObjectBasedOnEventType(selectedRaceData, eventValue)
@@ -27,8 +28,8 @@ const ResultSection = ({
 
   const notFound =
     eventValue === "Qualifying"
-      ? `No qualifying available for ${selectedCircuit?.label} in ${selectedSeason.id} or selected driver`
-      : `No results available for ${selectedCircuit?.label} in ${selectedSeason.id} or selected driver`;
+      ? `No qualifying available for ${selectedRace.name} in ${selectedSeason.id} or selected driver`
+      : `No results available for ${selectedRace.name} in ${selectedSeason.id} or selected driver`;
 
   useEffect(() => {
     setRaceDataResults(

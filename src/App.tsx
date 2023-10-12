@@ -10,15 +10,11 @@ import { Analytics } from "@vercel/analytics/react";
 import StandingsPage from "./pages/StandingPage";
 import { Driver } from "./types/driver";
 import { getDriversFromApi } from "./service/driverService";
-import { Circuit } from "./types/circuit";
 import { Season } from "./types/season";
 import { getSeasonsFromApi } from "./service/seasonService";
-import { getCircuitsFromApi } from "./service/circuitService";
 
 function App() {
   const [drivers, setDrivers] = React.useState<Driver[]>();
-
-  const [circuits, setCircuits] = React.useState<Circuit[]>();
 
   const [seasons, setSeasons] = React.useState<Season[]>();
 
@@ -33,12 +29,6 @@ function App() {
   useEffect(() => {
     getSeasonsFromApi().then((seasons) => {
       setSeasons(seasons?.seasons.sort((a, b) => b.year - a.year));
-    });
-  }, []);
-
-  useEffect(() => {
-    getCircuitsFromApi().then((circuits) => {
-      setCircuits(circuits?.circuits);
     });
   }, []);
 
@@ -82,7 +72,6 @@ function App() {
                   theme={theme}
                   drivers={drivers ?? []}
                   seasons={seasons ?? []}
-                  circuits={circuits ?? []}
                 />
               }
             />

@@ -5,7 +5,6 @@ import {
   AutoCompleteOptions,
   driversEmptyOption,
 } from "../components/autocomplete/F1AutoComplete";
-import { yearCircuitMap } from "../components/F1Data/YearCircuitMap";
 import { yearSprintRaceMap } from "../components/F1Data/SprintRaces";
 import { Driver } from "../types/driver";
 import DriverAutoComplete from "../components/autocomplete/DriverAutoComplete";
@@ -15,25 +14,23 @@ import SeasonAutoComplete, {
 } from "../components/autocomplete/SeasonAutoComplete";
 import ResultSection from "../components/resultSection/ResultSection";
 import { getResultFromObjectBasedOnEventType } from "../components/resultSection/resultSectionUtils";
-import { Circuit } from "../types/circuit";
-import CircuitAutoComplete, {
-  circuitToAutoCompleteOption,
-} from "../components/autocomplete/CircuitAutoComplete";
+import CircuitAutoComplete from "../components/autocomplete/CircuitAutoComplete";
 import useInitialStates from "./hooks/useInitialStates";
 import EventAutoComplete, {
   eventDefaultOption,
 } from "../components/autocomplete/EventAutoComplete";
 import { getF1Data } from "../service/f1Service";
 import { RaceTable } from "../types/F1Data";
+import { Race } from "../types/race";
+import { getRacesForSeason } from "../service/raceService";
 
 interface Props {
   theme: Theme;
   drivers: Driver[];
   seasons: Season[];
-  circuits: Circuit[];
 }
 
-const MainPage = ({ theme, drivers, seasons, circuits }: Props) => {
+const MainPage = ({ theme, drivers, seasons }: Props) => {
   const [selectedDriver, setSelectedDriver] =
     useState<AutoCompleteOptions>(driversEmptyOption);
   const [selectedRaceData, setSelectedRaceData] = useState<RaceTable>({
@@ -46,11 +43,9 @@ const MainPage = ({ theme, drivers, seasons, circuits }: Props) => {
 
   const [modifiedDrivers, setModifiedDrivers] = useState<Driver[]>(drivers);
 
-  const [circuitsForYear, setCircuitsForYear] = useState<Circuit[]>(circuits);
+  const [selectedRace, setSelectedRace] = useState<Race>();
 
-  const [selectedCircuit, setSelectedCircuit] = useState<
-    AutoCompleteOptions | undefined
-  >();
+  const [racesForSeason, setRacesForSeason] = useState<Race[]>([]);
 
   const [selectedEvent, setSelectedEvent] =
     useState<AutoCompleteOptions>(eventDefaultOption);
@@ -61,30 +56,21 @@ const MainPage = ({ theme, drivers, seasons, circuits }: Props) => {
     setSelectedRaceData(data);
   };
 
-  const setCircuitsInOrder = () => {
-    const circuitsOrdered: Circuit[] = [];
-    yearCircuitMap.get(selectedSeason.id)?.forEach((value) => {
-      const c = circuits.find((circuit) => circuit?.circuitRef === value);
-      if (c != null) circuitsOrdered.push(c);
-    });
-    setCircuitsForYear(circuitsOrdered);
-    getData(circuitsOrdered[0]?.circuitRef);
+  const setCircuitsInOrder = async () => {
+    const racesForSeason: Race[] = (await getRacesForSeason(selectedSeason.id))
+      ?.races;
+
+    setRacesForSeason(racesForSeason);
+    setSelectedRace(racesForSeason[0]);
+
+    getData(racesForSeason[0]?.circuit?.circuitRef);
   };
 
   useInitialStates({
-    circuits,
-    circuitsForYear,
-    setCircuitsInOrder,
     drivers,
     modifiedDrivers,
     setModifiedDrivers,
   });
-
-  useEffect(() => {
-    !selectedCircuit &&
-      circuitsForYear?.length > 0 &&
-      setSelectedCircuit(circuitToAutoCompleteOption(circuitsForYear[0]));
-  }, [circuitsForYear]);
 
   // Effects
   useEffect(() => {
@@ -92,8 +78,10 @@ const MainPage = ({ theme, drivers, seasons, circuits }: Props) => {
   }, [selectedSeason]);
 
   useEffect(() => {
-    getData(selectedCircuit?.id ?? circuitsForYear[0]?.circuitRef);
-  }, [selectedCircuit, selectedEvent]);
+    getData(
+      selectedRace?.circuit.circuitRef ?? racesForSeason[0]?.circuit?.circuitRef
+    );
+  }, [selectedRace, selectedEvent]);
 
   useEffect(() => {
     setSelectedDriver(driversEmptyOption);
@@ -122,15 +110,15 @@ const MainPage = ({ theme, drivers, seasons, circuits }: Props) => {
           marginTop: "180px",
         }}
       >
-        {selectedCircuit && (
+        {selectedRace && (
           <MapCarousel
             height={"230px"}
             width={"50%"}
             margin={"0 auto"}
             offset={4}
-            circuits={circuitsForYear}
-            selectedCircuit={selectedCircuit}
-            setSelectedCircuit={setSelectedCircuit}
+            racesForSeason={racesForSeason}
+            selectedRace={selectedRace}
+            setSelectedRace={setSelectedRace}
           />
         )}
       </Box>
@@ -150,7 +138,7 @@ const MainPage = ({ theme, drivers, seasons, circuits }: Props) => {
               sprint={
                 yearSprintRaceMap
                   .get(selectedSeason.id)
-                  ?.includes(selectedCircuit?.id ?? "") ?? false
+                  ?.includes(selectedRace?.circuit.circuitRef ?? "") ?? false
               }
             />
           </Grid>
@@ -162,11 +150,11 @@ const MainPage = ({ theme, drivers, seasons, circuits }: Props) => {
             />
           </Grid>
           <Grid item xs={3}>
-            {selectedCircuit && (
+            {selectedRace && (
               <CircuitAutoComplete
-                circuits={circuitsForYear}
-                selectedCircuit={selectedCircuit}
-                setSelectedCircuit={setSelectedCircuit}
+                racesForSeason={racesForSeason}
+                setSelectedRace={setSelectedRace}
+                selectedRace={selectedRace}
               />
             )}
           </Grid>
@@ -178,14 +166,14 @@ const MainPage = ({ theme, drivers, seasons, circuits }: Props) => {
             />
           </Grid>
           <Grid item xs={12}>
-            {selectedCircuit && (
+            {selectedRace && (
               <ResultSection
                 eventValue={selectedEvent.id}
                 selectedSeason={selectedSeason}
                 selectedRaceData={selectedRaceData}
                 theme={theme}
                 selectedDriver={selectedDriver}
-                selectedCircuit={selectedCircuit}
+                selectedRace={selectedRace}
               />
             )}
           </Grid>

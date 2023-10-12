@@ -1,30 +1,26 @@
 import F1AutoComplete, { AutoCompleteOptions } from "./F1AutoComplete";
-import { Circuit } from "../../types/circuit";
 import { useEffect, useState } from "react";
+import { Race } from "../../types/race";
 
 export const circuitDefaultOption: AutoCompleteOptions = {
   label: "Monaco",
   id: "monaco",
 };
 
-export const circuitToAutoCompleteOption = (
-  circuit: Circuit
-): AutoCompleteOptions => {
-  return { label: circuit?.name, id: circuit?.circuitRef };
+export const raceToAutoCompleteOption = (race: Race): AutoCompleteOptions => {
+  return { label: race.circuit.name, id: race.raceId.toString() };
 };
 
 interface Props {
-  circuits: Circuit[];
-  selectedCircuit: AutoCompleteOptions;
-  setSelectedCircuit: React.Dispatch<
-    React.SetStateAction<AutoCompleteOptions | undefined>
-  >;
+  racesForSeason: Race[];
+  setSelectedRace: React.Dispatch<React.SetStateAction<Race | undefined>>;
+  selectedRace: Race | undefined;
 }
 
 const CircuitAutoComplete = ({
-  circuits,
-  selectedCircuit,
-  setSelectedCircuit,
+  racesForSeason,
+  setSelectedRace,
+  selectedRace,
 }: Props) => {
   const [allCircuitOptions, setAllCircuitOptions] = useState<
     AutoCompleteOptions[]
@@ -32,18 +28,14 @@ const CircuitAutoComplete = ({
 
   useEffect(() => {
     setAllCircuitOptions(
-      circuits.map((element, index) => ({
-        label: element.name,
-        id: element.circuitRef,
-      }))
+      racesForSeason.map((element, index) => raceToAutoCompleteOption(element))
     );
-  }, [circuits]);
+  }, [racesForSeason]);
 
-  const handleSelectChangeCircuit = (circuitId: string) => {
-    const selected = allCircuitOptions.find(
-      (element) => element.id === circuitId
+  const handleSelectChangeCircuit = (raceId: string) => {
+    setSelectedRace(
+      racesForSeason.find((element) => element.raceId === +raceId)
     );
-    setSelectedCircuit(selected ?? allCircuitOptions[0]);
   };
 
   return (
@@ -51,7 +43,7 @@ const CircuitAutoComplete = ({
       allOptions={allCircuitOptions}
       handleSelectChange={handleSelectChangeCircuit}
       label="Circuits"
-      val={selectedCircuit}
+      val={raceToAutoCompleteOption(selectedRace ?? racesForSeason[0])}
     />
   );
 };

@@ -2,20 +2,16 @@ import Carousel from "react-spring-3d-carousel";
 import { useEffect, useState } from "react";
 import { config } from "@react-spring/web";
 import Cards from "./Cards";
-import { Circuit } from "../../types/circuit";
-import { AutoCompleteOptions } from "../autocomplete/F1AutoComplete";
-import { circuitToAutoCompleteOption } from "../autocomplete/CircuitAutoComplete";
+import { Race } from "../../types/race";
 
 interface Props {
   offset: number;
   width: string;
   height: string;
   margin: string;
-  circuits: Circuit[];
-  selectedCircuit: AutoCompleteOptions;
-  setSelectedCircuit: React.Dispatch<
-    React.SetStateAction<AutoCompleteOptions | undefined>
-  >;
+  racesForSeason: Race[];
+  setSelectedRace: React.Dispatch<React.SetStateAction<Race | undefined>>;
+  selectedRace: Race | undefined;
 }
 
 const MapCarousel = ({
@@ -23,9 +19,9 @@ const MapCarousel = ({
   width,
   height,
   margin,
-  circuits,
-  selectedCircuit,
-  setSelectedCircuit,
+  racesForSeason,
+  selectedRace,
+  setSelectedRace,
 }: Props): JSX.Element => {
   const [cards, setCards] = useState<
     {
@@ -36,22 +32,22 @@ const MapCarousel = ({
   >([]);
 
   useEffect(() => {
-    const cardsList = Cards(circuits);
+    const cardsList = Cards(racesForSeason);
     const table = cardsList.map((element, index) => {
-      const circuit = circuits[index];
+      const race = racesForSeason[index];
       return {
         ...element,
-        onClick: () => setSelectedCircuit(circuitToAutoCompleteOption(circuit)),
+        onClick: () => setSelectedRace(race),
       };
     });
     setCards(table);
-  }, [circuits]);
+  }, [racesForSeason]);
 
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
 
-  const selectedCircuitIndex = circuits.findIndex(
-    (circuit) => circuit.circuitRef === selectedCircuit.id
+  const selectedCircuitIndex = racesForSeason.findIndex(
+    (race) => race.raceId === selectedRace?.raceId
   );
 
   // the required distance between touchStart and touchEnd to be detected as a swipe
@@ -70,12 +66,10 @@ const MapCarousel = ({
     const isLeftSwipe = distance > minSwipeDistance;
     const isRightSwipe = distance < -minSwipeDistance;
     if (isLeftSwipe || isRightSwipe) {
-      setSelectedCircuit(
-        circuitToAutoCompleteOption(
-          isLeftSwipe
-            ? circuits[selectedCircuitIndex + 1]
-            : circuits[selectedCircuitIndex - 1]
-        )
+      setSelectedRace(
+        isLeftSwipe
+          ? racesForSeason[selectedCircuitIndex + 1]
+          : racesForSeason[selectedCircuitIndex - 1]
       );
     }
   };
