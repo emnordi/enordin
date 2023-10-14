@@ -1,22 +1,14 @@
-import {
-  TableContainer,
-  Paper,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-  Theme,
-} from "@mui/material";
+import { TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, Theme } from "@mui/material";
 import { DriverStanding } from "../../types/driverStanding";
 
 interface Props {
   standingData: DriverStanding[];
+  driverConstructorMap: Map<number, string[]>;
   notFound: string;
   theme: Theme;
 }
 
-const DriverStandingsTable = ({ standingData, notFound, theme }: Props) => {
+const DriverStandingsTable = ({ standingData, driverConstructorMap, notFound, theme }: Props) => {
   const showData: boolean = standingData != null && standingData?.length > 0;
 
   return (
@@ -34,7 +26,7 @@ const DriverStandingsTable = ({ standingData, notFound, theme }: Props) => {
               <TableCell align="left">Driver</TableCell>
               <TableCell align="left">Nationality</TableCell>
               <TableCell align="left">Wins</TableCell>
-              {/* <TableCell align="left">Constructor</TableCell> */}
+              <TableCell align="left">Constructor</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -53,17 +45,13 @@ const DriverStandingsTable = ({ standingData, notFound, theme }: Props) => {
                 </TableCell>
                 <TableCell align="left">{standingData?.points}</TableCell>
                 <TableCell align="left">
-                  {standingData?.driver?.forename +
-                    " " +
-                    standingData?.driver?.surname}
+                  {standingData?.driver?.forename + " " + standingData?.driver?.surname}
                 </TableCell>
-                <TableCell align="left">
-                  {standingData?.driver?.nationality}
-                </TableCell>
+                <TableCell align="left">{standingData?.driver?.nationality}</TableCell>
                 <TableCell align="left">{standingData?.wins}</TableCell>
-                {/* <TableCell align="left">
-                  {standingData?.Constructors?.map((c) => c.name).join(", ")}
-                </TableCell> */}
+                <TableCell align="left">
+                  {driverConstructorMap.get(standingData?.driver?.driverId)?.toString() ?? "No constructor"}
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
