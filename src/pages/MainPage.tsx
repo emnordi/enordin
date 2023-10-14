@@ -49,6 +49,14 @@ const MainPage = ({ theme, drivers, seasons }: Props) => {
     QualifyingResult[]
   >([]);
 
+  const [selectedRaceResultsModified, setSelectedRaceResultsModified] =
+    useState<RaceResult[]>([]);
+
+  const [
+    selectedQualifyingResultsModified,
+    setSelectedQualifyingResultsModified,
+  ] = useState<QualifyingResult[]>([]);
+
   const [racesForSeason, setRacesForSeason] = useState<Race[]>([]);
 
   const [selectedEvent, setSelectedEvent] =
@@ -56,7 +64,9 @@ const MainPage = ({ theme, drivers, seasons }: Props) => {
 
   const positionForDNFs = (results: RaceResult[]) => {
     // Set position for results with no position based on number of laps completed
-    const resultsWithPosition = results.filter((e) => e.position !== "\\N");
+    const resultsWithPosition = results
+      .filter((e) => e.position !== "\\N")
+      .sort((a, b) => +a.position - +b.position);
     const resultsWithNoPosition = results
       .filter((e) => e.position === "\\N")
       .sort((a, b) => b.laps - a.laps);
@@ -120,6 +130,29 @@ const MainPage = ({ theme, drivers, seasons }: Props) => {
   useEffect(() => {
     setSelectedDriver(driversEmptyOption);
   }, [selectedEvent]);
+
+  useEffect(() => {
+    setSelectedRaceResultsModified(selectedRaceResults);
+    setSelectedQualifyingResultsModified(selectedQualifyingResults);
+  }, [selectedRaceResults, selectedQualifyingResults]);
+
+  useEffect(() => {
+    if (selectedDriver.id == "") {
+      setSelectedRaceResultsModified(selectedRaceResults);
+      setSelectedQualifyingResultsModified(selectedQualifyingResults);
+      return;
+    }
+
+    const filteredResults = selectedRaceResults.filter(
+      (row) => row.driver.driverRef === selectedDriver.id
+    );
+    const filteredQualiResults = selectedQualifyingResults.filter(
+      (row) => row.driver.driverRef === selectedDriver.id
+    );
+
+    setSelectedRaceResultsModified(filteredResults);
+    setSelectedQualifyingResultsModified(filteredQualiResults);
+  }, [selectedDriver]);
 
   return (
     <>
@@ -188,8 +221,8 @@ const MainPage = ({ theme, drivers, seasons }: Props) => {
               <ResultSection
                 eventValue={selectedEvent.id}
                 selectedSeason={selectedSeason}
-                selectedRaceResults={selectedRaceResults}
-                qualifyingResults={selectedQualifyingResults}
+                selectedRaceResults={selectedRaceResultsModified}
+                qualifyingResults={selectedQualifyingResultsModified}
                 theme={theme}
                 selectedDriver={selectedDriver}
                 selectedRace={selectedRace}
