@@ -5,7 +5,6 @@ import {
   AutoCompleteOptions,
   driversEmptyOption,
 } from "../components/autocomplete/F1AutoComplete";
-import { yearSprintRaceMap } from "../components/F1Data/SprintRaces";
 import { Driver } from "../types/driver";
 import DriverAutoComplete from "../components/autocomplete/DriverAutoComplete";
 import { Season } from "../types/season";
@@ -45,6 +44,10 @@ const MainPage = ({ theme, drivers, seasons }: Props) => {
     []
   );
 
+  const [selectedSprintResults, setSelectedSprintResults] = useState<
+    RaceResult[]
+  >([]);
+
   const [selectedQualifyingResults, setSelectedQualifyingResults] = useState<
     QualifyingResult[]
   >([]);
@@ -82,10 +85,19 @@ const MainPage = ({ theme, drivers, seasons }: Props) => {
       return;
     }
 
+    const sprintResults: RaceResult[] = (
+      await getResultsForRaceId(
+        selectedRace?.raceId ?? racesForSeason[0]?.raceId,
+        true
+      )
+    ).raceResults;
+
+    setSelectedSprintResults(positionForDNFs(sprintResults));
+
     const raceResults: RaceResult[] = (
       await getResultsForRaceId(
         selectedRace?.raceId ?? racesForSeason[0]?.raceId,
-        selectedEvent.id === "sprint"
+        false
       )
     ).raceResults;
 
@@ -186,11 +198,7 @@ const MainPage = ({ theme, drivers, seasons }: Props) => {
             <EventAutoComplete
               selectedEvent={selectedEvent}
               setSelectedEvent={setSelectedEvent}
-              sprint={
-                yearSprintRaceMap
-                  .get(selectedSeason.id)
-                  ?.includes(selectedRace?.circuit.circuitRef ?? "") ?? false
-              }
+              sprint={selectedSprintResults.length > 0}
             />
           </Grid>
           <Grid item xs={3}>
@@ -221,7 +229,11 @@ const MainPage = ({ theme, drivers, seasons }: Props) => {
               <ResultSection
                 eventValue={selectedEvent.id}
                 selectedSeason={selectedSeason}
-                selectedRaceResults={selectedRaceResultsModified}
+                selectedRaceResults={
+                  selectedEvent.id === "sprint"
+                    ? selectedSprintResults
+                    : selectedRaceResultsModified
+                }
                 qualifyingResults={selectedQualifyingResultsModified}
                 theme={theme}
                 selectedDriver={selectedDriver}

@@ -1,17 +1,20 @@
 import { Box, Grid, Tab, Tabs, Theme } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { getStandings } from "../service/f1Service";
-import { StandingsList, StandingsRoot } from "../types/F1Data";
 import DriverStandingsTable from "../components/table/DriverStandingsTable";
 import ConstructorStandingsTable from "../components/table/ConstructorStandingsTable";
 import F1AutoComplete, {
   AutoCompleteOptions,
 } from "../components/autocomplete/F1AutoComplete";
-import { yearCircuitMap } from "../components/F1Data/YearCircuitMap";
 import { Season } from "../types/season";
 import SeasonAutoComplete, {
   seasonDefaultOption,
 } from "../components/autocomplete/SeasonAutoComplete";
+import { Race } from "../types/race";
+import { getRacesForSeason } from "../service/raceService";
+import { DriverStanding } from "../types/driverStanding";
+import { ConstructorStanding } from "../types/constructorStanding";
+import { getDriverStandingsFromApi } from "../service/driverStandingService";
+import { getConstructorStandingsFromApi } from "../service/constructorStandingService";
 
 interface Props {
   theme: Theme;
@@ -21,44 +24,63 @@ interface Props {
 const StandingsPage = ({ theme, seasons }: Props) => {
   const [value, setValue] = React.useState(0);
 
-  const [numberOfRaces, setNumberOfRaces] = React.useState<number>(0);
+  const [racesForSeason, setRacesForSeason] = useState<Race[]>([]);
 
-  const [round, setRound] = React.useState<number>(0);
-
-  const allRoundOptions: AutoCompleteOptions[] = [
-    { label: "Final Results", id: "0" },
-  ].concat(
-    Array.from(Array(numberOfRaces).keys()).map((element, index) => ({
-      label: (1 + element).toString(),
-      id: (1 + element).toString(),
-    }))
-  );
-
-  const handleChangeRound = (newRound: string) => {
-    setRound(Number(newRound));
-  };
+  const [selectedRace, setSelectedRace] = useState<Race>();
 
   const [selectedSeason, setSelectedSeason] =
     useState<AutoCompleteOptions>(seasonDefaultOption);
 
-  const [standingsData, setStandingsData] = React.useState<StandingsList>();
+  const [driverStandings, setDriverStandings] = React.useState<
+    DriverStanding[]
+  >([]);
+
+  const [constructorStandings, setConstructorStandings] = React.useState<
+    ConstructorStanding[]
+  >([]);
+
+  const numberOfRaces = racesForSeason.length;
+
+  const handleChangeSelectedRace = (newRaceId: string) => {
+    setSelectedRace(
+      racesForSeason.find(({ raceId }) => raceId.toString() === newRaceId)
+    );
+  };
+
+  const setCircuitsInOrder = async () => {
+    const racesForSeason: Race[] = (
+      await getRacesForSeason(selectedSeason.id)
+    )?.races?.reverse();
+
+    const filteredRacesForSeason = racesForSeason.filter(
+      (race) => new Date(race.date) <= new Date()
+    );
+
+    setRacesForSeason(filteredRacesForSeason);
+    setSelectedRace(filteredRacesForSeason[0]);
+  };
+
+  useEffect(() => {
+    setCircuitsInOrder();
+  }, [selectedSeason]);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
   };
 
-  const formatData = (data: StandingsRoot): StandingsList => {
-    return data.MRData.StandingsTable.StandingsLists[0];
-  };
-
   const getStandingsData = async (signal: AbortSignal) => {
-    const data = await getStandings(
-      selectedSeason.id,
-      value === 0,
-      round,
-      signal
-    );
-    setStandingsData(formatData(data));
+    const data =
+      selectedRace &&
+      (await getDriverStandingsFromApi(selectedRace.raceId)).driverStandings;
+
+    setDriverStandings(data ?? []);
+
+    const constructorData =
+      selectedRace &&
+      (await getConstructorStandingsFromApi(selectedRace.raceId))
+        .constructorStandings;
+
+    setConstructorStandings(constructorData ?? []);
   };
 
   useEffect(() => {
@@ -70,17 +92,23 @@ const StandingsPage = ({ theme, seasons }: Props) => {
         abortController.abort();
       }
     };
-  }, [value, selectedSeason, round]);
+  }, [selectedRace]);
 
-  useEffect(() => {
-    const newYearNumberOfRaces: number =
-      yearCircuitMap.get(selectedSeason.id)?.length ?? 0;
+  const raceToAutoCompleteOption = (
+    race: Race,
+    index: number
+  ): AutoCompleteOptions => {
+    return {
+      label: race.name + " (Round " + (numberOfRaces - (index + 1)) + ")",
+      id: race.raceId.toString(),
+    };
+  };
 
-    setNumberOfRaces(newYearNumberOfRaces);
-    if (newYearNumberOfRaces < round) {
-      setRound(0);
+  const allRoundOptions: AutoCompleteOptions[] = racesForSeason.map(
+    (race, index) => {
+      return raceToAutoCompleteOption(race, index);
     }
-  }, [selectedSeason]);
+  );
 
   return (
     <Box sx={{ width: "80%", margin: "0 auto", paddingTop: "5%" }}>
@@ -93,14 +121,17 @@ const StandingsPage = ({ theme, seasons }: Props) => {
           />
         </Grid>
         <Grid item xs={6}>
-          <F1AutoComplete
-            allOptions={allRoundOptions}
-            handleSelectChange={handleChangeRound}
-            label="Standing after round"
-            val={allRoundOptions?.find(
-              (element) => element.id === round.toString()
-            )}
-          />
+          {selectedRace && (
+            <F1AutoComplete
+              allOptions={allRoundOptions}
+              handleSelectChange={handleChangeSelectedRace}
+              label="Standing after round"
+              val={raceToAutoCompleteOption(
+                selectedRace,
+                racesForSeason.indexOf(selectedRace)
+              )}
+            />
+          )}
         </Grid>
       </Grid>
       <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
@@ -112,14 +143,14 @@ const StandingsPage = ({ theme, seasons }: Props) => {
 
       <div hidden={value !== 0}>
         <DriverStandingsTable
-          standingData={standingsData?.DriverStandings ?? []}
+          standingData={driverStandings}
           notFound="No standings found"
           theme={theme}
         />
       </div>
       <div hidden={value !== 1}>
         <ConstructorStandingsTable
-          standingData={standingsData?.ConstructorStandings ?? []}
+          standingData={constructorStandings}
           notFound="No standings found"
           theme={theme}
         />

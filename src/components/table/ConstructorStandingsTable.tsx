@@ -8,7 +8,7 @@ import {
   TableBody,
   Theme,
 } from "@mui/material";
-import { ConstructorStanding } from "../../types/F1Data";
+import { ConstructorStanding } from "../../types/constructorStanding";
 
 interface Props {
   standingData: ConstructorStanding[];
@@ -56,11 +56,9 @@ const ConstructorStandingsTable = ({
                 </TableCell>
                 <TableCell align="left">{standingData?.points}</TableCell>
                 <TableCell align="left">{standingData?.wins}</TableCell>
+                <TableCell align="left">{standingData?.team?.name}</TableCell>
                 <TableCell align="left">
-                  {standingData?.Constructor?.name}
-                </TableCell>
-                <TableCell align="left">
-                  {standingData?.Constructor?.nationality}
+                  {standingData?.team?.nationality}
                 </TableCell>
               </TableRow>
             ))}

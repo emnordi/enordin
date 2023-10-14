@@ -8,7 +8,7 @@ import {
   TableBody,
   Theme,
 } from "@mui/material";
-import { DriverStanding } from "../../types/F1Data";
+import { DriverStanding } from "../../types/driverStanding";
 
 interface Props {
   standingData: DriverStanding[];
@@ -34,7 +34,7 @@ const DriverStandingsTable = ({ standingData, notFound, theme }: Props) => {
               <TableCell align="left">Driver</TableCell>
               <TableCell align="left">Nationality</TableCell>
               <TableCell align="left">Wins</TableCell>
-              <TableCell align="left">Constructor</TableCell>
+              {/* <TableCell align="left">Constructor</TableCell> */}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -53,17 +53,17 @@ const DriverStandingsTable = ({ standingData, notFound, theme }: Props) => {
                 </TableCell>
                 <TableCell align="left">{standingData?.points}</TableCell>
                 <TableCell align="left">
-                  {standingData?.Driver?.givenName +
+                  {standingData?.driver?.forename +
                     " " +
-                    standingData?.Driver?.familyName}
+                    standingData?.driver?.surname}
                 </TableCell>
                 <TableCell align="left">
-                  {standingData?.Driver?.nationality}
+                  {standingData?.driver?.nationality}
                 </TableCell>
                 <TableCell align="left">{standingData?.wins}</TableCell>
-                <TableCell align="left">
+                {/* <TableCell align="left">
                   {standingData?.Constructors?.map((c) => c.name).join(", ")}
-                </TableCell>
+                </TableCell> */}
               </TableRow>
             ))}
           </TableBody>
