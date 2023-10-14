@@ -7,16 +7,18 @@ import {
   TableBody,
   Theme,
 } from "@mui/material";
-import { Result } from "../../types/F1Data";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { QualifyingRows } from "./QualifyingRows";
 import { RaceRows } from "./RaceRows";
 import { RaceColumns } from "./RaceColumns";
 import { QualifyingColumns } from "./QualifyingColumns";
+import { RaceResult } from "../../types/raceResult";
+import { QualifyingResult } from "../../types/qualifyingResult";
 
 interface Props {
-  selectedRaceData: Result[];
+  selectedRaceResults: RaceResult[];
+  qualifyingResults: QualifyingResult[];
   notFound: string;
   theme: Theme;
   eventValue: string;
@@ -37,13 +39,14 @@ const getArrow = (position: number) => {
 };
 
 const DataTable = ({
-  selectedRaceData,
+  selectedRaceResults,
+  qualifyingResults,
   notFound,
   theme,
   eventValue,
 }: Props) => {
   const showData: boolean =
-    selectedRaceData != null && selectedRaceData?.length > 0;
+    selectedRaceResults != null && selectedRaceResults?.length > 0;
 
   return (
     <TableContainer component={Paper}>
@@ -65,12 +68,12 @@ const DataTable = ({
           <TableBody>
             {eventValue === "qualifying" ? (
               <QualifyingRows
-                selectedRaceData={selectedRaceData}
+                qualifyingResults={qualifyingResults}
                 theme={theme}
               />
             ) : (
               <RaceRows
-                selectedRaceData={selectedRaceData}
+                selectedRaceResults={selectedRaceResults}
                 theme={theme}
                 getArrow={getArrow}
               />

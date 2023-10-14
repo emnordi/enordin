@@ -1,18 +1,18 @@
 import { TableRow, TableCell, Theme } from "@mui/material";
-import { Result } from "../../types/F1Data";
+import { RaceResult } from "../../types/raceResult";
 
 interface Props {
-  selectedRaceData: Result[];
+  selectedRaceResults: RaceResult[];
   theme: Theme;
   getArrow: (position: number) => JSX.Element;
 }
 
-export const RaceRows = ({ selectedRaceData, theme, getArrow }: Props) => {
+export const RaceRows = ({ selectedRaceResults, theme, getArrow }: Props) => {
   return (
     <>
-      {selectedRaceData.map((row) => (
+      {selectedRaceResults.map((row) => (
         <TableRow
-          key={row?.position}
+          key={row.resultId}
           sx={{
             "&:last-child td, &:last-child th": { border: 0 },
             "&:nth-of-type(odd)": {
@@ -24,7 +24,7 @@ export const RaceRows = ({ selectedRaceData, theme, getArrow }: Props) => {
             {row?.position}
           </TableCell>
           <TableCell align="left">
-            {row?.Driver?.givenName + " " + row?.Driver?.familyName}
+            {row?.driver?.forename + " " + row?.driver?.surname}
           </TableCell>
           <TableCell align="left" sx={{ paddingLeft: "5%" }}>
             {row?.grid}
@@ -33,9 +33,11 @@ export const RaceRows = ({ selectedRaceData, theme, getArrow }: Props) => {
             {+row?.grid - +row?.position}
             {getArrow(+row?.grid - +row?.position)}
           </TableCell>
-          <TableCell align="left">{row.FastestLap?.Time?.time}</TableCell>
-          <TableCell align="left">{row?.Driver?.nationality}</TableCell>
-          <TableCell align="left">{row?.Constructor?.name}</TableCell>
+          <TableCell align="left">
+            {row.fastestLapTime !== "\\N" ? row.fastestLapTime : null}
+          </TableCell>
+          <TableCell align="left">{row?.driver?.nationality}</TableCell>
+          <TableCell align="left">{row?.team?.name}</TableCell>
         </TableRow>
       ))}
     </>

@@ -1,17 +1,17 @@
 import { TableRow, TableCell, Theme } from "@mui/material";
-import { Result } from "../../types/F1Data";
+import { QualifyingResult } from "../../types/qualifyingResult";
 
 interface Props {
-  selectedRaceData: Result[];
+  qualifyingResults: QualifyingResult[];
   theme: Theme;
 }
 
-export const QualifyingRows = ({ selectedRaceData, theme }: Props) => {
+export const QualifyingRows = ({ qualifyingResults, theme }: Props) => {
   return (
     <>
-      {selectedRaceData.map((row) => (
+      {qualifyingResults.map((row) => (
         <TableRow
-          key={row?.position}
+          key={row.qualifyId}
           sx={{
             "&:last-child td, &:last-child th": { border: 0 },
             "&:nth-of-type(odd)": {
@@ -23,13 +23,19 @@ export const QualifyingRows = ({ selectedRaceData, theme }: Props) => {
             {row?.position}
           </TableCell>
           <TableCell align="right">
-            {row?.Driver?.givenName + " " + row?.Driver?.familyName}
+            {row?.driver?.forename + " " + row?.driver?.surname}
           </TableCell>
-          <TableCell align="right">{row?.Q1}</TableCell>
-          <TableCell align="right">{row?.Q2}</TableCell>
-          <TableCell align="right">{row?.Q3}</TableCell>
-          <TableCell align="right">{row?.Driver?.nationality}</TableCell>
-          <TableCell align="right">{row?.Constructor?.name}</TableCell>
+          <TableCell align="right">
+            {row?.q1 !== "\\N" ? row.q1 : null}
+          </TableCell>
+          <TableCell align="right">
+            {row?.q2 !== "\\N" ? row.q2 : null}
+          </TableCell>
+          <TableCell align="right">
+            {row?.q3 !== "\\N" ? row.q3 : null}
+          </TableCell>
+          <TableCell align="right">{row?.driver?.nationality}</TableCell>
+          <TableCell align="right">{row?.team?.name}</TableCell>
         </TableRow>
       ))}
     </>

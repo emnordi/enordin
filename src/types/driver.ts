@@ -4,7 +4,7 @@ export interface ApiDriverResponse {
 
 export interface Driver {
   _id: string;
-  driverId: string;
+  driverId: number;
   driverRef: string;
   number?: string;
   code: string;

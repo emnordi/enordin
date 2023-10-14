@@ -1,3 +1,5 @@
+import { Constructor } from "./constructor";
+import { Driver } from "./driver";
 import { Race } from "./race";
 
 export interface ApiRaceResultResponse {
@@ -11,7 +13,7 @@ export interface RaceResult {
   constructorId: number;
   number: number;
   grid: number;
-  position: number;
+  position: string;
   positionText: string;
   positionOrder: number;
   points: number;
@@ -22,5 +24,7 @@ export interface RaceResult {
   fastestLapTime: string;
   statusId: number;
   race: Race;
+  driver: Driver;
+  team: Constructor;
   _id: string;
 }

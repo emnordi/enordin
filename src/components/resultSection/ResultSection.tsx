@@ -1,15 +1,16 @@
 import { Theme } from "@mui/material";
-import { RaceTable, Result } from "../../types/F1Data";
 import { AutoCompleteOptions } from "../autocomplete/F1AutoComplete";
 import DataTable from "../table/DataTable";
-import { getResultFromObjectBasedOnEventType } from "./resultSectionUtils";
 import { useEffect, useState } from "react";
 import { Race } from "../../types/race";
+import { RaceResult } from "../../types/raceResult";
+import { QualifyingResult } from "../../types/qualifyingResult";
 
 interface Props {
   eventValue: string;
   selectedSeason: AutoCompleteOptions;
-  selectedRaceData: RaceTable;
+  selectedRaceResults: RaceResult[];
+  qualifyingResults: QualifyingResult[];
   theme: Theme;
   selectedDriver: AutoCompleteOptions;
   selectedRace: Race;
@@ -17,14 +18,14 @@ interface Props {
 const ResultSection = ({
   eventValue,
   selectedSeason,
-  selectedRaceData,
+  selectedRaceResults,
+  qualifyingResults,
   theme,
   selectedDriver,
   selectedRace,
 }: Props) => {
-  const [raceDataResults, setRaceDataResults] = useState<Result[]>(
-    getResultFromObjectBasedOnEventType(selectedRaceData, eventValue)
-  );
+  const [raceDataResults, setRaceDataResults] =
+    useState<RaceResult[]>(selectedRaceResults);
 
   const notFound =
     eventValue === "Qualifying"
@@ -32,21 +33,17 @@ const ResultSection = ({
       : `No results available for ${selectedRace.name} in ${selectedSeason.id} or selected driver`;
 
   useEffect(() => {
-    setRaceDataResults(
-      getResultFromObjectBasedOnEventType(selectedRaceData, eventValue)
-    );
-  }, [selectedRaceData]);
+    setRaceDataResults(selectedRaceResults);
+  }, [selectedRaceResults]);
 
   useEffect(() => {
     if (selectedDriver.id == "") {
-      setRaceDataResults(
-        getResultFromObjectBasedOnEventType(selectedRaceData, eventValue)
-      );
+      setRaceDataResults(selectedRaceResults);
       return;
     }
 
     const filteredResults = raceDataResults.filter(
-      (row) => row.Driver.driverId === selectedDriver.id
+      (row) => row.driver.driverRef === selectedDriver.id
     );
 
     setRaceDataResults(filteredResults);
@@ -54,7 +51,8 @@ const ResultSection = ({
 
   return (
     <DataTable
-      selectedRaceData={raceDataResults}
+      selectedRaceResults={selectedRaceResults}
+      qualifyingResults={qualifyingResults}
       notFound={notFound}
       theme={theme}
       eventValue={eventValue}

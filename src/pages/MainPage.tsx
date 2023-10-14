@@ -13,16 +13,16 @@ import SeasonAutoComplete, {
   seasonDefaultOption,
 } from "../components/autocomplete/SeasonAutoComplete";
 import ResultSection from "../components/resultSection/ResultSection";
-import { getResultFromObjectBasedOnEventType } from "../components/resultSection/resultSectionUtils";
 import CircuitAutoComplete from "../components/autocomplete/CircuitAutoComplete";
-import useInitialStates from "./hooks/useInitialStates";
 import EventAutoComplete, {
   eventDefaultOption,
 } from "../components/autocomplete/EventAutoComplete";
-import { getF1Data } from "../service/f1Service";
-import { RaceTable } from "../types/F1Data";
 import { Race } from "../types/race";
 import { getRacesForSeason } from "../service/raceService";
+import { getResultsForRaceId } from "../service/raceResultService";
+import { RaceResult } from "../types/raceResult";
+import { QualifyingResult } from "../types/qualifyingResult";
+import { getQualiResultsForRaceId } from "../service/qualifyingResultService";
 
 interface Props {
   theme: Theme;
@@ -33,11 +33,7 @@ interface Props {
 const MainPage = ({ theme, drivers, seasons }: Props) => {
   const [selectedDriver, setSelectedDriver] =
     useState<AutoCompleteOptions>(driversEmptyOption);
-  const [selectedRaceData, setSelectedRaceData] = useState<RaceTable>({
-    season: "",
-    circuitId: "",
-    Races: [],
-  });
+
   const [selectedSeason, setSelectedSeason] =
     useState<AutoCompleteOptions>(seasonDefaultOption);
 
@@ -45,15 +41,63 @@ const MainPage = ({ theme, drivers, seasons }: Props) => {
 
   const [selectedRace, setSelectedRace] = useState<Race>();
 
+  const [selectedRaceResults, setSelectedRaceResults] = useState<RaceResult[]>(
+    []
+  );
+
+  const [selectedQualifyingResults, setSelectedQualifyingResults] = useState<
+    QualifyingResult[]
+  >([]);
+
   const [racesForSeason, setRacesForSeason] = useState<Race[]>([]);
 
   const [selectedEvent, setSelectedEvent] =
     useState<AutoCompleteOptions>(eventDefaultOption);
 
+  const positionForDNFs = (results: RaceResult[]) => {
+    // Set position for results with no position based on number of laps completed
+    const resultsWithPosition = results.filter((e) => e.position !== "\\N");
+    const resultsWithNoPosition = results
+      .filter((e) => e.position === "\\N")
+      .sort((a, b) => b.laps - a.laps);
+    resultsWithNoPosition.forEach((e, i) => {
+      e.position = (resultsWithPosition.length + 1 + i).toString();
+    });
+
+    return resultsWithPosition.concat(resultsWithNoPosition);
+  };
   // Fetch F1 data from the API
-  const getData = async (circuitId: string) => {
-    const data = await getF1Data(circuitId, selectedSeason, selectedEvent);
-    setSelectedRaceData(data);
+  const getData = async () => {
+    if (!selectedRace) {
+      return;
+    }
+
+    const raceResults: RaceResult[] = (
+      await getResultsForRaceId(
+        selectedRace?.raceId ?? racesForSeason[0]?.raceId,
+        selectedEvent.id === "sprint"
+      )
+    ).raceResults;
+
+    setSelectedRaceResults(positionForDNFs(raceResults));
+
+    const qualifyingResults: QualifyingResult[] = (
+      await getQualiResultsForRaceId(
+        selectedRace?.raceId ?? racesForSeason[0]?.raceId
+      )
+    ).qualifyingResults;
+
+    setSelectedQualifyingResults(qualifyingResults);
+
+    const driverIdsForSelectedRace: number[] = raceResults.map(
+      ({ driverId }) => driverId
+    );
+
+    setModifiedDrivers(
+      drivers?.filter((driver) =>
+        driverIdsForSelectedRace?.includes(driver.driverId)
+      )
+    );
   };
 
   const setCircuitsInOrder = async () => {
@@ -62,15 +106,7 @@ const MainPage = ({ theme, drivers, seasons }: Props) => {
 
     setRacesForSeason(racesForSeason);
     setSelectedRace(racesForSeason[0]);
-
-    getData(racesForSeason[0]?.circuit?.circuitRef);
   };
-
-  useInitialStates({
-    drivers,
-    modifiedDrivers,
-    setModifiedDrivers,
-  });
 
   // Effects
   useEffect(() => {
@@ -78,30 +114,12 @@ const MainPage = ({ theme, drivers, seasons }: Props) => {
   }, [selectedSeason]);
 
   useEffect(() => {
-    getData(
-      selectedRace?.circuit.circuitRef ?? racesForSeason[0]?.circuit?.circuitRef
-    );
+    getData();
   }, [selectedRace, selectedEvent]);
 
   useEffect(() => {
     setSelectedDriver(driversEmptyOption);
   }, [selectedEvent]);
-
-  useEffect(() => {
-    const res = getResultFromObjectBasedOnEventType(
-      selectedRaceData,
-      selectedEvent.id
-    );
-
-    const driverIdsInSelectedRace: string[] =
-      res.map((row) => row?.Driver?.driverId) ?? [];
-
-    setModifiedDrivers(
-      drivers?.filter((driver) =>
-        driverIdsInSelectedRace?.includes(driver.driverRef)
-      )
-    );
-  }, [selectedRaceData]);
 
   return (
     <>
@@ -170,7 +188,8 @@ const MainPage = ({ theme, drivers, seasons }: Props) => {
               <ResultSection
                 eventValue={selectedEvent.id}
                 selectedSeason={selectedSeason}
-                selectedRaceData={selectedRaceData}
+                selectedRaceResults={selectedRaceResults}
+                qualifyingResults={selectedQualifyingResults}
                 theme={theme}
                 selectedDriver={selectedDriver}
                 selectedRace={selectedRace}
