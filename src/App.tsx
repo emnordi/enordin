@@ -68,11 +68,13 @@ function App() {
             <Route
               path="/"
               element={
-                <MainPage
-                  theme={theme}
-                  drivers={drivers ?? []}
-                  seasons={seasons ?? []}
-                />
+                drivers && (
+                  <MainPage
+                    theme={theme}
+                    drivers={drivers}
+                    seasons={seasons ?? []}
+                  />
+                )
               }
             />
             <Route
