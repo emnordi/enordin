@@ -128,7 +128,18 @@ const ResponsiveAppBar = ({ theme, colorMode }: Props): JSX.Element => {
             >
               {pages.map((page) => (
                 <MenuItem key={page.title} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">{page.title}</Typography>
+                  {/* <Typography textAlign="center">{page.title}</Typography> */}
+                  <Button
+                    key={page.title}
+                    onClick={handleCloseNavMenu}
+                    sx={{
+                      color: pathName === page.path ? theme.palette.error.main : "white",
+                      display: "block",
+                    }}
+                    href={page.path}
+                  >
+                    {page.title}
+                  </Button>
                 </MenuItem>
               ))}
             </Menu>

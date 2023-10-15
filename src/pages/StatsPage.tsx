@@ -80,7 +80,7 @@ const StatsPage = ({ drivers, theme, seasons }: Props) => {
         </Grid>
       </Grid>
 
-      <Grid item xs={12}>
+      <Grid item xs={12} sx={{ paddingTop: "1%" }}>
         <DriverStatsTable
           raceResults={racesForSelectedDriver}
           driver={drivers.find(({ driverId }) => driverId === +selectedDriver.id)}
