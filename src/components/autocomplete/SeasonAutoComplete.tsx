@@ -6,30 +6,29 @@ export const seasonDefaultOption: AutoCompleteOptions = {
   id: "2023",
 };
 
+export const statsPageDefaultOption: AutoCompleteOptions = {
+  label: "Whole career",
+  id: "0",
+};
+
 interface Props {
   seasons: Season[];
   selectedSeason: AutoCompleteOptions;
   setSelectedSeason: React.Dispatch<React.SetStateAction<AutoCompleteOptions>>;
+  statsPage?: boolean;
 }
 
-const SeasonAutoComplete = ({
-  seasons,
-  selectedSeason,
-  setSelectedSeason,
-}: Props) => {
+const SeasonAutoComplete = ({ seasons, selectedSeason, setSelectedSeason, statsPage }: Props) => {
   // Options for year selection
-  const allYearOptions: AutoCompleteOptions[] = seasons.map(
-    (element, index) => ({
-      label: element.year.toString(),
-      id: element.year.toString(),
-    })
-  );
+  const allYearOptions: AutoCompleteOptions[] = seasons.map((element, index) => ({
+    label: element.year.toString(),
+    id: element.year.toString(),
+  }));
+
+  statsPage && allYearOptions.unshift(statsPageDefaultOption);
 
   const handleChangeYear = (newYear: string) => {
-    setSelectedSeason(
-      allYearOptions.find((element) => element.id === newYear) ??
-        seasonDefaultOption
-    );
+    setSelectedSeason(allYearOptions.find((element) => element.id === newYear) ?? seasonDefaultOption);
   };
 
   return (

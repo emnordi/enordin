@@ -1,9 +1,6 @@
 import { useEffect, useState } from "react";
 import { Driver } from "../../types/driver";
-import F1AutoComplete, {
-  AutoCompleteOptions,
-  driversEmptyOption,
-} from "./F1AutoComplete";
+import F1AutoComplete, { AutoCompleteOptions } from "./F1AutoComplete";
 
 interface Props {
   modifiedDrivers: Driver[];
@@ -11,31 +8,27 @@ interface Props {
   setSelectedDriver: React.Dispatch<React.SetStateAction<AutoCompleteOptions>>;
 }
 
-const DriverAutoComplete = ({
-  modifiedDrivers,
-  selectedDriver,
-  setSelectedDriver,
-}: Props) => {
-  const [allDriverOptions, setAllDriverOptions] = useState<
-    AutoCompleteOptions[]
-  >([driversEmptyOption]);
+export const driversEmptyOption: AutoCompleteOptions = {
+  label: "Choose a driver to see their results",
+  id: "",
+};
+
+const DriverAutoComplete = ({ modifiedDrivers, selectedDriver, setSelectedDriver }: Props) => {
+  const [allDriverOptions, setAllDriverOptions] = useState<AutoCompleteOptions[]>([driversEmptyOption]);
 
   useEffect(() => {
     setAllDriverOptions(
       [driversEmptyOption].concat(
         modifiedDrivers.map((element, index) => ({
           label: `${element.forename} ${element.surname}`,
-          id: element.driverRef,
+          id: element.driverId.toString(),
         }))
       )
     );
   }, [modifiedDrivers]);
 
   const handleSelectChangeDriver = (driverId: string) => {
-    setSelectedDriver(
-      allDriverOptions.find((element) => element.id === driverId) ??
-        driversEmptyOption
-    );
+    setSelectedDriver(allDriverOptions.find((element) => element.id === driverId) ?? driversEmptyOption);
   };
 
   return (

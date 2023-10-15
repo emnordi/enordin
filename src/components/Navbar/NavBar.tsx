@@ -12,11 +12,13 @@ import MenuItem from "@mui/material/MenuItem";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
 import { Theme } from "@mui/material/styles";
-import { Link } from "react-router-dom";
+
+import Formula1Regular from "./Formula1Regular.woff2";
 
 const pages = [
   { title: "Race results", path: "/" },
   { title: "Standings", path: "/standings" },
+  { title: "Stats", path: "/stats" },
 ];
 
 interface Props {
@@ -27,9 +29,7 @@ interface Props {
 }
 
 const ResponsiveAppBar = ({ theme, colorMode }: Props): JSX.Element => {
-  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
-    null
-  );
+  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
@@ -45,10 +45,7 @@ const ResponsiveAppBar = ({ theme, colorMode }: Props): JSX.Element => {
     <AppBar
       position="static"
       sx={{
-        backgroundColor:
-          theme.palette.mode === "dark"
-            ? theme.palette.background.default
-            : "#CBC3E3",
+        backgroundColor: theme.palette.mode === "dark" ? theme.palette.background.default : "#CBC3E3",
       }}
     >
       <Container maxWidth="xl">
@@ -81,6 +78,24 @@ const ResponsiveAppBar = ({ theme, colorMode }: Props): JSX.Element => {
           >
             enordin
           </Typography>
+          {/* <Typography
+            variant="h6"
+            noWrap
+            component="a"
+            href="/"
+            sx={{
+              mr: 2,
+              display: { xs: "none", md: "flex" },
+              fontFamily: Formula1Regular,
+              color: "inherit",
+              textDecoration: "none",
+              padding: "1rem",
+            }}
+          >
+            ENORDIN
+          </Typography> */}
+
+          {/* <p style={{ fontFamily: Formula1Regular }}>ENORDIN</p> */}
 
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
             <IconButton
@@ -136,8 +151,7 @@ const ResponsiveAppBar = ({ theme, colorMode }: Props): JSX.Element => {
                 onClick={handleCloseNavMenu}
                 sx={{
                   my: 2,
-                  color:
-                    pathName === page.path ? theme.palette.error.main : "white",
+                  color: pathName === page.path ? theme.palette.error.main : "white",
                   display: "block",
                 }}
                 href={page.path}
@@ -156,16 +170,8 @@ const ResponsiveAppBar = ({ theme, colorMode }: Props): JSX.Element => {
               borderRadius: 1,
             }}
           >
-            <IconButton
-              sx={{ ml: 1 }}
-              onClick={colorMode.toggleColorMode}
-              color="inherit"
-            >
-              {theme.palette.mode === "dark" ? (
-                <Brightness7Icon />
-              ) : (
-                <Brightness4Icon />
-              )}
+            <IconButton sx={{ ml: 1 }} onClick={colorMode.toggleColorMode} color="inherit">
+              {theme.palette.mode === "dark" ? <Brightness7Icon /> : <Brightness4Icon />}
             </IconButton>
           </Box>
         </Toolbar>

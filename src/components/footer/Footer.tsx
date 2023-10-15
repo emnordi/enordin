@@ -14,6 +14,8 @@ const Footer = ({ theme }: Props) => {
         paddingTop: "1rem",
         paddingBottom: "1rem",
         borderTop: "1px solid black",
+        bottom: 0,
+        position: "absolute",
       }}
     >
       <Container maxWidth="lg">

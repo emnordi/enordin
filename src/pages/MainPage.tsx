@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { Box, Grid, Theme } from "@mui/material";
 import MapCarousel from "../components/carousel/Carousel";
-import { AutoCompleteOptions, driversEmptyOption } from "../components/autocomplete/F1AutoComplete";
+import { AutoCompleteOptions } from "../components/autocomplete/F1AutoComplete";
 import { Driver } from "../types/driver";
-import DriverAutoComplete from "../components/autocomplete/DriverAutoComplete";
+import DriverAutoComplete, { driversEmptyOption } from "../components/autocomplete/DriverAutoComplete";
 import { Season } from "../types/season";
 import SeasonAutoComplete, { seasonDefaultOption } from "../components/autocomplete/SeasonAutoComplete";
 import ResultSection from "../components/resultSection/ResultSection";
@@ -93,8 +93,8 @@ const MainPage = ({ theme, drivers, seasons }: Props) => {
       return;
     }
 
-    const filteredResults = selectedRaceResults.filter((row) => row.driver.driverRef === selectedDriver.id);
-    const filteredQualiResults = selectedQualifyingResults.filter((row) => row.driver.driverRef === selectedDriver.id);
+    const filteredResults = selectedRaceResults.filter((row) => row.driverId === +selectedDriver.id);
+    const filteredQualiResults = selectedQualifyingResults.filter((row) => row.driverId === +selectedDriver.id);
 
     setSelectedRaceResultsModified(filteredResults);
     setSelectedQualifyingResultsModified(filteredQualiResults);

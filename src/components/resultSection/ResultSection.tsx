@@ -24,8 +24,7 @@ const ResultSection = ({
   selectedDriver,
   selectedRace,
 }: Props) => {
-  const [raceDataResults, setRaceDataResults] =
-    useState<RaceResult[]>(selectedRaceResults);
+  const [raceDataResults, setRaceDataResults] = useState<RaceResult[]>(selectedRaceResults);
 
   const notFound =
     eventValue === "Qualifying"
@@ -42,9 +41,7 @@ const ResultSection = ({
       return;
     }
 
-    const filteredResults = raceDataResults.filter(
-      (row) => row.driver.driverRef === selectedDriver.id
-    );
+    const filteredResults = raceDataResults.filter((row) => row.driverId === +selectedDriver.id);
 
     setRaceDataResults(filteredResults);
   }, [selectedDriver]);

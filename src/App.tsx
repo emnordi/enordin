@@ -12,6 +12,7 @@ import { Driver } from "./types/driver";
 import { getDriversFromApi } from "./service/driverService";
 import { Season } from "./types/season";
 import { getSeasonsFromApi } from "./service/seasonService";
+import StatsPage from "./pages/StatsPage";
 
 function App() {
   const [drivers, setDrivers] = React.useState<Driver[]>();
@@ -20,9 +21,7 @@ function App() {
 
   useEffect(() => {
     getDriversFromApi().then((drivers) => {
-      setDrivers(
-        drivers?.drivers.sort((a, b) => a.surname.localeCompare(b.surname))
-      );
+      setDrivers(drivers?.drivers.sort((a, b) => a.surname.localeCompare(b.surname)));
     });
   }, []);
 
@@ -35,9 +34,7 @@ function App() {
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
   const isMobileMatch = useMediaQuery("(max-width:600px)");
 
-  const [mode, setMode] = React.useState<"light" | "dark">(
-    prefersDarkMode ? "dark" : "light"
-  );
+  const [mode, setMode] = React.useState<"light" | "dark">(prefersDarkMode ? "dark" : "light");
 
   const colorMode = React.useMemo(
     () => ({
@@ -65,22 +62,9 @@ function App() {
         <ResponsiveAppBar theme={theme} colorMode={colorMode} />
         <BrowserRouter>
           <Routes>
-            <Route
-              path="/"
-              element={
-                drivers && (
-                  <MainPage
-                    theme={theme}
-                    drivers={drivers}
-                    seasons={seasons ?? []}
-                  />
-                )
-              }
-            />
-            <Route
-              path="/standings"
-              element={<StandingsPage theme={theme} seasons={seasons} />}
-            />
+            <Route path="/" element={drivers && <MainPage theme={theme} drivers={drivers} seasons={seasons ?? []} />} />
+            <Route path="/standings" element={<StandingsPage theme={theme} seasons={seasons} />} />
+            <Route path="/stats" element={<StatsPage drivers={drivers ?? []} theme={theme} seasons={seasons} />} />
           </Routes>
         </BrowserRouter>
         <Footer theme={theme} />

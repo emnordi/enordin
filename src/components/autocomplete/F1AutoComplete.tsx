@@ -7,22 +7,12 @@ interface Props {
   val?: AutoCompleteOptions;
 }
 
-export const driversEmptyOption: AutoCompleteOptions = {
-  label: "Chose a driver to see only their results",
-  id: "",
-};
-
 export interface AutoCompleteOptions {
   label: string;
   id: string;
 }
 
-const F1AutoComplete = ({
-  allOptions,
-  handleSelectChange,
-  label,
-  val,
-}: Props) => {
+const F1AutoComplete = ({ allOptions, handleSelectChange, label, val }: Props) => {
   return (
     <Autocomplete
       disablePortal
