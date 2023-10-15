@@ -8,7 +8,7 @@ export const seasonDefaultOption: AutoCompleteOptions = {
 
 export const statsPageDefaultOption: AutoCompleteOptions = {
   label: "Whole career",
-  id: "0",
+  id: "",
 };
 
 interface Props {
@@ -27,8 +27,10 @@ const SeasonAutoComplete = ({ seasons, selectedSeason, setSelectedSeason, statsP
 
   statsPage && allYearOptions.unshift(statsPageDefaultOption);
 
+  const defaultOption = statsPage ? statsPageDefaultOption : seasonDefaultOption;
+
   const handleChangeYear = (newYear: string) => {
-    setSelectedSeason(allYearOptions.find((element) => element.id === newYear) ?? seasonDefaultOption);
+    setSelectedSeason(allYearOptions.find((element) => element.id === newYear) ?? defaultOption);
   };
 
   return (

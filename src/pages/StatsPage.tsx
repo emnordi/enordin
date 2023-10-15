@@ -9,6 +9,8 @@ import { getChampions, getRaceStats } from "../service/statsService";
 import { RaceResult } from "../types/raceResult";
 import DriverStatsTable from "../components/table/DriverStatsTable";
 import { WorldChampion } from "../types/worldChampions";
+import { Race } from "../types/race";
+import { getRacesForSeason } from "../service/raceService";
 
 interface Props {
   drivers: Driver[];
@@ -18,12 +20,24 @@ interface Props {
 
 const StatsPage = ({ drivers, theme, seasons }: Props) => {
   const [selectedDriver, setSelectedDriver] = useState<AutoCompleteOptions>(driversEmptyOption);
-
   const [selectedSeason, setSelectedSeason] = useState<AutoCompleteOptions>(statsPageDefaultOption);
-
   const [racesForSelectedDriver, setRacesForSelectedDriver] = useState<RaceResult[]>([]);
-
   const [championships, setChampionships] = useState<WorldChampion[]>([]);
+  const [racesForSeason, setRacesForSeason] = useState<Race[]>([]);
+
+  const setCircuitsInOrder = async () => {
+    const racesResponse = await getRacesForSeason(selectedSeason.id);
+    const racesForSeason = racesResponse?.races || [];
+    setRacesForSeason(racesForSeason);
+  };
+
+  useEffect(() => {
+    if (selectedSeason.id === "") {
+      setRacesForSeason([]);
+      return;
+    }
+    setCircuitsInOrder();
+  }, [selectedSeason]);
 
   const getDriverStats = async (signal: AbortSignal) => {
     if (selectedDriver.id === "") return;
@@ -61,6 +75,7 @@ const StatsPage = ({ drivers, theme, seasons }: Props) => {
             seasons={seasons ?? []}
             selectedSeason={selectedSeason}
             setSelectedSeason={setSelectedSeason}
+            statsPage
           />
         </Grid>
       </Grid>
@@ -69,7 +84,10 @@ const StatsPage = ({ drivers, theme, seasons }: Props) => {
         <DriverStatsTable
           raceResults={racesForSelectedDriver}
           driver={drivers.find(({ driverId }) => driverId === +selectedDriver.id)}
-          championships={championships}
+          championships={
+            selectedSeason.id === "" ? championships : championships.filter(({ year }) => year === +selectedSeason.id)
+          }
+          racesForSeason={racesForSeason}
           theme={theme}
         />
       </Grid>

@@ -2,17 +2,25 @@ import { TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody
 import { RaceResult } from "../../types/raceResult";
 import { Driver } from "../../types/driver";
 import { WorldChampion } from "../../types/worldChampions";
+import { Race } from "../../types/race";
 
 interface Props {
   raceResults: RaceResult[];
   driver?: Driver;
   championships: WorldChampion[];
+  racesForSeason: Race[];
   theme: Theme;
 }
 
-const DriverStatsTable = ({ raceResults, driver, championships, theme }: Props) => {
-  const podiums = raceResults.filter((result) => result.position !== "\\N" && +result.position <= 3);
+const DriverStatsTable = ({ raceResults, driver, championships, racesForSeason, theme }: Props) => {
+  let podiums = raceResults.filter((result) => result.position !== "\\N" && +result.position <= 3);
+  if (racesForSeason.length > 0) {
+    const raceIdsForSeason = racesForSeason.map(({ raceId }) => raceId);
+    podiums = podiums.filter(({ raceId }) => raceIdsForSeason.includes(raceId));
+  }
+
   const wins = podiums.filter((result) => +result.position === 1);
+
   return driver ? (
     <TableContainer component={Paper}>
       <Table aria-label="simple table">
