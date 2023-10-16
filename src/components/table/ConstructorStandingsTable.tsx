@@ -1,13 +1,4 @@
-import {
-  TableContainer,
-  Paper,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-  Theme,
-} from "@mui/material";
+import { TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, Theme } from "@mui/material";
 import { ConstructorStanding } from "../../types/constructorStanding";
 
 interface Props {
@@ -16,11 +7,7 @@ interface Props {
   theme: Theme;
 }
 
-const ConstructorStandingsTable = ({
-  standingData,
-  notFound,
-  theme,
-}: Props) => {
+const ConstructorStandingsTable = ({ standingData, notFound, theme }: Props) => {
   const showData: boolean = standingData != null && standingData?.length > 0;
 
   return (
@@ -30,7 +17,7 @@ const ConstructorStandingsTable = ({
           <TableHead>
             <TableRow
               sx={{
-                th: { fontWeight: "bold", fontSize: "1em" },
+                th: { fontSize: "0.9em", fontFamily: "Formula1Regular" },
               }}
             >
               <TableCell align="left">Position</TableCell>
@@ -57,9 +44,7 @@ const ConstructorStandingsTable = ({
                 <TableCell align="left">{standingData?.points}</TableCell>
                 <TableCell align="left">{standingData?.wins}</TableCell>
                 <TableCell align="left">{standingData?.team?.name}</TableCell>
-                <TableCell align="left">
-                  {standingData?.team?.nationality}
-                </TableCell>
+                <TableCell align="left">{standingData?.team?.nationality}</TableCell>
               </TableRow>
             ))}
           </TableBody>

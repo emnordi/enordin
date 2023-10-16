@@ -136,8 +136,8 @@ const StandingsPage = ({ theme, seasons }: Props) => {
       </Grid>
       <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
         <Tabs value={value} onChange={handleChange} aria-label="tabs">
-          <Tab label="Drivers Standings" />
-          <Tab label="Constructors Standings" />
+          <Tab sx={{ fontFamily: "Formula1Regular" }} label="Drivers Standings" />
+          <Tab sx={{ fontFamily: "Formula1Regular" }} label="Constructors Standings" />
         </Tabs>
       </Box>
 

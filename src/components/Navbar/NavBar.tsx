@@ -12,8 +12,7 @@ import MenuItem from "@mui/material/MenuItem";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
 import { Theme } from "@mui/material/styles";
-
-import Formula1Regular from "./Formula1Regular.woff2";
+import { Link } from "@mui/material";
 
 const pages = [
   { title: "Race results", path: "/" },
@@ -68,7 +67,7 @@ const ResponsiveAppBar = ({ theme, colorMode }: Props): JSX.Element => {
             sx={{
               mr: 2,
               display: { xs: "none", md: "flex" },
-              fontFamily: "monospace",
+              fontFamily: "Formula1Bold",
               fontWeight: 700,
               letterSpacing: ".3rem",
               color: "inherit",
@@ -78,24 +77,6 @@ const ResponsiveAppBar = ({ theme, colorMode }: Props): JSX.Element => {
           >
             enordin
           </Typography>
-          {/* <Typography
-            variant="h6"
-            noWrap
-            component="a"
-            href="/"
-            sx={{
-              mr: 2,
-              display: { xs: "none", md: "flex" },
-              fontFamily: Formula1Regular,
-              color: "inherit",
-              textDecoration: "none",
-              padding: "1rem",
-            }}
-          >
-            ENORDIN
-          </Typography> */}
-
-          {/* <p style={{ fontFamily: Formula1Regular }}>ENORDIN</p> */}
 
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
             <IconButton
@@ -128,18 +109,9 @@ const ResponsiveAppBar = ({ theme, colorMode }: Props): JSX.Element => {
             >
               {pages.map((page) => (
                 <MenuItem key={page.title} onClick={handleCloseNavMenu}>
-                  {/* <Typography textAlign="center">{page.title}</Typography> */}
-                  <Button
-                    key={page.title}
-                    onClick={handleCloseNavMenu}
-                    sx={{
-                      color: pathName === page.path ? theme.palette.error.main : "white",
-                      display: "block",
-                    }}
-                    href={page.path}
-                  >
+                  <Link href={page.path} sx={{ textDecoration: "none", fontFamily: "Formula1Regular" }}>
                     {page.title}
-                  </Button>
+                  </Link>
                 </MenuItem>
               ))}
             </Menu>
@@ -164,6 +136,7 @@ const ResponsiveAppBar = ({ theme, colorMode }: Props): JSX.Element => {
                   my: 2,
                   color: pathName === page.path ? theme.palette.error.main : "white",
                   display: "block",
+                  fontFamily: "Formula1Regular",
                 }}
                 href={page.path}
               >

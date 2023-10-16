@@ -1,13 +1,26 @@
+@font-face {
+  font-family: "Formula1Regular";
+  src: local("Formula1Regular"), url(../public/fonts/Formula1Regular.woff2) format("woff2");
+}
+
+@font-face {
+  font-family: "Formula1Bold";
+  src: local("Formula1Bold"), url(../public/fonts/Formula1Bold.woff2) format("woff2");
+}
+
+@font-face {
+  font-family: "Formula1Wide";
+  src: local("Formula1Wide"), url(../public/fonts/Formula1Wide.woff2) format("woff2");
+}
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans",
+    "Droid Sans", "Helvetica Neue", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
 }

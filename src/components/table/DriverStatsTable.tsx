@@ -27,7 +27,7 @@ const DriverStatsTable = ({ raceResults, driver, championships, racesForSeason, 
         <TableHead>
           <TableRow
             sx={{
-              th: { fontWeight: "bold", fontSize: "1em" },
+              th: { fontFamily: "Formula1Regular", fontSize: "0.9em" },
             }}
           >
             <TableCell align="left">Driver</TableCell>

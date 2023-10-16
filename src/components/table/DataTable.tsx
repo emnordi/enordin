@@ -1,12 +1,4 @@
-import {
-  TableContainer,
-  Paper,
-  Table,
-  TableHead,
-  TableRow,
-  TableBody,
-  Theme,
-} from "@mui/material";
+import { TableContainer, Paper, Table, TableHead, TableRow, TableBody, Theme } from "@mui/material";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { QualifyingRows } from "./QualifyingRows";
@@ -26,57 +18,35 @@ interface Props {
 
 const getArrow = (position: number) => {
   if (position > 0) {
-    return (
-      <KeyboardArrowUpIcon sx={{ color: "green", marginBottom: "-5px" }} />
-    );
+    return <KeyboardArrowUpIcon sx={{ color: "green", marginBottom: "-5px" }} />;
   } else if (position < 0) {
-    return (
-      <KeyboardArrowDownIcon sx={{ color: "red", marginBottom: "-5px" }} />
-    );
+    return <KeyboardArrowDownIcon sx={{ color: "red", marginBottom: "-5px" }} />;
   } else {
     return <KeyboardArrowDownIcon sx={{ visibility: "hidden" }} />;
   }
 };
 
-const DataTable = ({
-  selectedRaceResults,
-  qualifyingResults,
-  notFound,
-  theme,
-  eventValue,
-}: Props) => {
-  const showData: boolean =
-    selectedRaceResults != null && selectedRaceResults?.length > 0;
+const DataTable = ({ selectedRaceResults, qualifyingResults, notFound, theme, eventValue }: Props) => {
+  const showData: boolean = selectedRaceResults != null && selectedRaceResults?.length > 0;
 
   return (
-    <TableContainer component={Paper}>
+    <TableContainer component={Paper} sx={{ fontFamily: "Formula1Regular" }}>
       {showData && (
         <Table sx={{ minWidth: 650 }} aria-label="simple table">
           <TableHead>
             <TableRow
               sx={{
-                th: { fontWeight: "bold", fontSize: "1em" },
+                th: { fontSize: "0.9em", fontFamily: "Formula1Regular" },
               }}
             >
-              {eventValue === "qualifying" ? (
-                <QualifyingColumns />
-              ) : (
-                <RaceColumns />
-              )}
+              {eventValue === "qualifying" ? <QualifyingColumns /> : <RaceColumns />}
             </TableRow>
           </TableHead>
           <TableBody>
             {eventValue === "qualifying" ? (
-              <QualifyingRows
-                qualifyingResults={qualifyingResults}
-                theme={theme}
-              />
+              <QualifyingRows qualifyingResults={qualifyingResults} theme={theme} />
             ) : (
-              <RaceRows
-                selectedRaceResults={selectedRaceResults}
-                theme={theme}
-                getArrow={getArrow}
-              />
+              <RaceRows selectedRaceResults={selectedRaceResults} theme={theme} getArrow={getArrow} />
             )}
           </TableBody>
         </Table>

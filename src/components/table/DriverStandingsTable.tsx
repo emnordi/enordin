@@ -18,7 +18,7 @@ const DriverStandingsTable = ({ standingData, driverConstructorMap, notFound, th
           <TableHead>
             <TableRow
               sx={{
-                th: { fontWeight: "bold", fontSize: "1em" },
+                th: { fontSize: "0.9em", fontFamily: "Formula1Regular" },
               }}
             >
               <TableCell align="left">Position</TableCell>
