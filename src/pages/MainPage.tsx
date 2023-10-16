@@ -78,13 +78,26 @@ const MainPage = ({ theme, drivers, seasons }: Props) => {
 
   useEffect(() => {
     getData();
-    setSelectedDriver(driversEmptyOption);
   }, [selectedRace, selectedEvent]);
 
   useEffect(() => {
-    setSelectedRaceResultsModified(selectedRaceResults);
-    setSelectedQualifyingResultsModified(selectedQualifyingResults);
+    const raceResult =
+      selectedDriver.id === ""
+        ? selectedRaceResults
+        : selectedRaceResults.filter((row) => row.driverId === +selectedDriver.id);
+    const qualiResult =
+      selectedDriver.id === ""
+        ? selectedQualifyingResults
+        : selectedQualifyingResults.filter((row) => row.driverId === +selectedDriver.id);
+    setSelectedRaceResultsModified(raceResult);
+    setSelectedQualifyingResultsModified(qualiResult);
   }, [selectedRaceResults, selectedQualifyingResults]);
+
+  useEffect(() => {
+    const currentDriver = drivers.find((driver) => driver.driverId === +selectedDriver.id);
+    if (currentDriver && modifiedDrivers.includes(currentDriver)) return;
+    setSelectedDriver(driversEmptyOption);
+  }, [modifiedDrivers]);
 
   useEffect(() => {
     if (selectedDriver.id == "") {
