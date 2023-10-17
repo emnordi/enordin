@@ -11,6 +11,7 @@ import DriverStatsTable from "../components/table/DriverStatsTable";
 import { WorldChampion } from "../types/worldChampions";
 import { Race } from "../types/race";
 import { getRacesForSeason } from "../service/raceService";
+import ConfettiExplosion from "react-confetti-explosion";
 
 interface Props {
   drivers: Driver[];
@@ -24,6 +25,7 @@ const StatsPage = ({ drivers, theme, seasons }: Props) => {
   const [racesForSelectedDriver, setRacesForSelectedDriver] = useState<RaceResult[]>([]);
   const [championships, setChampionships] = useState<WorldChampion[]>([]);
   const [racesForSeason, setRacesForSeason] = useState<Race[]>([]);
+  const [isExploding, setIsExploding] = useState(false);
 
   const setCircuitsInOrder = async () => {
     const racesResponse = await getRacesForSeason(selectedSeason.id);
@@ -50,6 +52,10 @@ const StatsPage = ({ drivers, theme, seasons }: Props) => {
   };
 
   useEffect(() => {
+    if (selectedDriver.id === "830") {
+      setIsExploding(true);
+    }
+
     const controller = new AbortController();
     const signal = controller.signal;
 
@@ -62,6 +68,16 @@ const StatsPage = ({ drivers, theme, seasons }: Props) => {
 
   return (
     <Box sx={{ width: "80%", margin: "0 auto", paddingTop: "5%" }}>
+      <Box sx={{ marginLeft: "50%" }}>
+        {isExploding && (
+          <ConfettiExplosion
+            width={2000}
+            particleCount={300}
+            duration={4000}
+            onComplete={() => setIsExploding(false)}
+          />
+        )}
+      </Box>
       <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
         <Grid item xs={6}>
           <DriverAutoComplete
