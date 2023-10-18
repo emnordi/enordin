@@ -92,6 +92,7 @@ const StatsPage = ({ drivers, theme, seasons }: Props) => {
             selectedSeason={selectedSeason}
             setSelectedSeason={setSelectedSeason}
             statsPage
+            disabled={selectedDriver.id === ""}
           />
         </Grid>
       </Grid>

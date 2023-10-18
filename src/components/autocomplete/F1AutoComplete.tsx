@@ -5,6 +5,7 @@ interface Props {
   handleSelectChange: (value: string) => void;
   label: string;
   val?: AutoCompleteOptions;
+  disabled?: boolean;
 }
 
 export interface AutoCompleteOptions {
@@ -12,7 +13,7 @@ export interface AutoCompleteOptions {
   id: string;
 }
 
-const F1AutoComplete = ({ allOptions, handleSelectChange, label, val }: Props) => {
+const F1AutoComplete = ({ allOptions, handleSelectChange, label, val, disabled }: Props) => {
   return (
     <Autocomplete
       disablePortal
@@ -37,6 +38,7 @@ const F1AutoComplete = ({ allOptions, handleSelectChange, label, val }: Props) =
         handleSelectChange(value?.id || "");
       }}
       renderInput={(params) => <TextField {...params} label={label} />}
+      disabled={disabled}
     />
   );
 };

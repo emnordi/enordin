@@ -16,9 +16,10 @@ interface Props {
   selectedSeason: AutoCompleteOptions;
   setSelectedSeason: React.Dispatch<React.SetStateAction<AutoCompleteOptions>>;
   statsPage?: boolean;
+  disabled?: boolean;
 }
 
-const SeasonAutoComplete = ({ seasons, selectedSeason, setSelectedSeason, statsPage }: Props) => {
+const SeasonAutoComplete = ({ seasons, selectedSeason, setSelectedSeason, statsPage, disabled }: Props) => {
   // Options for year selection
   const allYearOptions: AutoCompleteOptions[] = seasons.map((element, index) => ({
     label: element.year.toString(),
@@ -39,6 +40,7 @@ const SeasonAutoComplete = ({ seasons, selectedSeason, setSelectedSeason, statsP
       handleSelectChange={handleChangeYear}
       val={selectedSeason}
       label="Season"
+      disabled={disabled}
     />
   );
 };
