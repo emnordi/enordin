@@ -46,9 +46,7 @@ const MapCarousel = ({
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
 
-  const selectedCircuitIndex = racesForSeason.findIndex(
-    (race) => race.raceId === selectedRace?.raceId
-  );
+  const selectedCircuitIndex = racesForSeason.findIndex((race) => race.raceId === selectedRace?.raceId);
 
   // the required distance between touchStart and touchEnd to be detected as a swipe
   const minSwipeDistance = 50;
@@ -60,17 +58,20 @@ const MapCarousel = ({
 
   const onTouchMove = (e: any) => setTouchEnd(e.targetTouches[0].clientX);
 
+  const newIndex = (index: number, increment: boolean) => {
+    const newIndex = index + (increment ? 1 : -1);
+    if (newIndex < 0) return racesForSeason.length - 1;
+    if (newIndex > racesForSeason.length - 1) return 0;
+    return newIndex;
+  };
+
   const onTouchEnd = () => {
     if (!touchStart || !touchEnd) return;
     const distance = touchStart - touchEnd;
     const isLeftSwipe = distance > minSwipeDistance;
     const isRightSwipe = distance < -minSwipeDistance;
     if (isLeftSwipe || isRightSwipe) {
-      setSelectedRace(
-        isLeftSwipe
-          ? racesForSeason[selectedCircuitIndex + 1]
-          : racesForSeason[selectedCircuitIndex - 1]
-      );
+      setSelectedRace(racesForSeason[newIndex(selectedCircuitIndex, isLeftSwipe)]);
     }
   };
 
