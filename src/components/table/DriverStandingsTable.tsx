@@ -36,7 +36,11 @@ const DriverStandingsTable = ({ standingData, driverConstructorMap, notFound, th
                 sx={{
                   "&:last-child td, &:last-child th": { border: 0 },
                   "&:nth-of-type(odd)": {
-                    backgroundColor: theme.palette.action.hover,
+                    backgroundColor:
+                      theme.palette.mode == "dark" ? theme.palette.action.hover : theme.palette.action.hover,
+                  },
+                  "&:nth-of-type(even)": {
+                    backgroundColor: theme.palette.mode == "light" ? "#CBC3E3" : "",
                   },
                 }}
               >
