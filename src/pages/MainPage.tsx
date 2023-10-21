@@ -15,6 +15,7 @@ import { getResultsForRaceId } from "../service/raceResultService";
 import { RaceResult } from "../types/raceResult";
 import { QualifyingResult } from "../types/qualifyingResult";
 import { getQualiResultsForRaceId } from "../service/qualifyingResultService";
+import { isMobile } from "react-device-detect";
 
 interface Props {
   theme: Theme;
@@ -117,7 +118,7 @@ const MainPage = ({ theme, drivers, seasons }: Props) => {
     <>
       <Box
         sx={{
-          marginTop: "180px",
+          marginTop: `${isMobile ? 20 : 10}%`,
         }}
       >
         {selectedRace && (
@@ -141,21 +142,21 @@ const MainPage = ({ theme, drivers, seasons }: Props) => {
         }}
       >
         <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-          <Grid item xs={3}>
+          <Grid item xs={6}>
             <EventAutoComplete
               selectedEvent={selectedEvent}
               setSelectedEvent={setSelectedEvent}
               sprint={selectedSprintResults.length > 0}
             />
           </Grid>
-          <Grid item xs={3}>
+          <Grid item xs={6}>
             <SeasonAutoComplete
               seasons={seasons ?? []}
               selectedSeason={selectedSeason}
               setSelectedSeason={setSelectedSeason}
             />
           </Grid>
-          <Grid item xs={3}>
+          <Grid item xs={6}>
             {selectedRace && (
               <CircuitAutoComplete
                 racesForSeason={racesForSeason}
@@ -164,7 +165,7 @@ const MainPage = ({ theme, drivers, seasons }: Props) => {
               />
             )}
           </Grid>
-          <Grid item xs={3}>
+          <Grid item xs={6}>
             <DriverAutoComplete
               modifiedDrivers={modifiedDrivers}
               selectedDriver={selectedDriver}

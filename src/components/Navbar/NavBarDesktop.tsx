@@ -26,7 +26,7 @@ const NavBarDesktop = ({ theme, colorMode, pages }: Props): JSX.Element => {
       <Box
         sx={{
           mr: 2,
-          display: { xs: "none", md: "flex" },
+          display: "flex",
           height: "50px",
           width: "50px",
         }}
@@ -40,7 +40,7 @@ const NavBarDesktop = ({ theme, colorMode, pages }: Props): JSX.Element => {
         href="/"
         sx={{
           mr: 2,
-          display: { xs: "none", md: "flex" },
+          display: "flex",
           fontFamily: "Formula1Bold",
           fontWeight: 700,
           letterSpacing: ".3rem",

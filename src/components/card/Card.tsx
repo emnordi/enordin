@@ -1,6 +1,7 @@
 import { animated, useSpring } from "@react-spring/web";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Styles from "./Card.module.css";
+import { isMobile } from "react-device-detect";
 
 interface Props {
   imagen: string;
@@ -11,20 +12,36 @@ interface Props {
 
 const Card = ({ imagen, title, location, country }: Props) => {
   const [show, setShown] = useState(false);
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
   const props3 = useSpring({
     transform: show ? "scale(1.03)" : "scale(1)",
     boxShadow: show ? "0 20px 25px rgb(0 0 0 / 25%)" : "0 2px 10px rgb(0 0 0 / 8%)",
   });
 
+  useEffect(() => {
+    window.addEventListener("resize", () => {
+      setWindowWidth(window.innerWidth);
+    });
+  }, []);
+
   return (
     <animated.div
       className={Styles.card}
-      style={props3}
+      style={{
+        ...props3,
+        width: `${isMobile ? windowWidth * 0.8 : windowWidth * 0.27}px`,
+        fontSize: `${isMobile ? windowWidth * 0.03 : windowWidth * 0.01}px`,
+      }}
       onMouseEnter={() => setShown(true)}
       onMouseLeave={() => setShown(false)}
     >
-      <img src={"assets/" + imagen + ".jpg"} alt="Not found" />
+      <img
+        height={`${isMobile ? windowWidth * 0.5 : windowWidth * 0.15}px`}
+        src={"assets/" + imagen + ".jpg"}
+        style={{ borderRadius: "20px", border: "none", marginTop: "-10%", aspectRatio: "2500/1618" }}
+        alt="Not found"
+      />
       <h2>{title}</h2>
       <p>
         Location: {location} - {country}

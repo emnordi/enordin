@@ -8,11 +8,7 @@ export default function Cards(allCircuits: Race[]) {
       key: index,
       content: (
         <Card
-          imagen={
-            hasImage.includes(element.circuit.circuitRef)
-              ? element.circuit.circuitRef
-              : "not_found"
-          }
+          imagen={hasImage.includes(element.circuit.circuitRef) ? element.circuit.circuitRef : "not_found"}
           title={element?.name}
           location={element.circuit.location}
           country={element.circuit.country}

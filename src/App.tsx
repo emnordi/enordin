@@ -32,7 +32,6 @@ function App() {
   }, []);
 
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
-  const isMobileMatch = useMediaQuery("(max-width:600px)");
 
   const [mode, setMode] = React.useState<"light" | "dark">(prefersDarkMode ? "dark" : "light");
 
