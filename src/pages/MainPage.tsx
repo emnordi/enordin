@@ -138,7 +138,7 @@ const MainPage = ({ theme, drivers, seasons }: Props) => {
       <Box
         sx={{
           paddingTop: `${isMobile ? 15 : 6}%`,
-          width: "80%",
+          width: `${isMobile ? 100 : 80}%`,
           margin: "0 auto",
         }}
       >
