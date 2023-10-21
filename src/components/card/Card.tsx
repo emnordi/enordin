@@ -30,14 +30,14 @@ const Card = ({ imagen, title, location, country }: Props) => {
       className={Styles.card}
       style={{
         ...props3,
-        width: `${isMobile ? windowWidth * 0.8 : windowWidth * 0.27}px`,
-        fontSize: `${isMobile ? windowWidth * 0.03 : windowWidth * 0.01}px`,
+        width: `${isMobile ? windowWidth * 0.5 : windowWidth * 0.25}px`,
+        fontSize: `${isMobile ? windowWidth * 0.015 : windowWidth * 0.008}px`,
       }}
       onMouseEnter={() => setShown(true)}
       onMouseLeave={() => setShown(false)}
     >
       <img
-        height={`${isMobile ? windowWidth * 0.5 : windowWidth * 0.15}px`}
+        height={`${isMobile ? windowWidth * 0.3 : windowWidth * 0.14}px`}
         src={"assets/" + imagen + ".jpg"}
         style={{ borderRadius: "20px", border: "none", marginTop: "-10%", aspectRatio: "2500/1618" }}
         alt="Not found"

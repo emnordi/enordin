@@ -118,15 +118,15 @@ const MainPage = ({ theme, drivers, seasons }: Props) => {
     <>
       <Box
         sx={{
-          marginTop: `${isMobile ? 20 : 10}%`,
+          paddingTop: `${isMobile ? 20 : 10}%`,
         }}
       >
         {selectedRace && (
           <MapCarousel
             height={"230px"}
-            width={"50%"}
+            width={`${isMobile ? 40 : 50}%`}
             margin={"0 auto"}
-            offset={4}
+            offset={isMobile ? 2 : 4}
             racesForSeason={racesForSeason}
             selectedRace={selectedRace}
             setSelectedRace={setSelectedRace}
@@ -136,7 +136,7 @@ const MainPage = ({ theme, drivers, seasons }: Props) => {
 
       <Box
         sx={{
-          paddingTop: "6rem",
+          paddingTop: `${isMobile ? 15 : 6}%`,
           width: "80%",
           margin: "0 auto",
         }}
