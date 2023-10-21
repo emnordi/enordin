@@ -43,7 +43,7 @@ const NavBarMobile = ({ theme, colorMode, pages }: Props): JSX.Element => {
           onClose={() => setOpen(false)}
           disableScrollLock={true}
           PaperProps={{
-            sx: { width: "20%" },
+            sx: { width: "30%" },
           }}
         >
           {pages.map((page) => (
