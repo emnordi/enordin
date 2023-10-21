@@ -26,7 +26,7 @@ const NavBarMobile = ({ theme, colorMode, pages }: Props): JSX.Element => {
 
   return (
     <Toolbar disableGutters>
-      <Box sx={{ flexGrow: 1, display: "flex", gap: "20%" }}>
+      <Box sx={{ flexGrow: 1, display: "flex", gap: "40%" }}>
         <IconButton
           size="large"
           aria-label="account of current user"
@@ -35,12 +35,20 @@ const NavBarMobile = ({ theme, colorMode, pages }: Props): JSX.Element => {
           onClick={() => setOpen(true)}
           color="inherit"
         >
-          <MenuIcon />
+          <MenuIcon sx={{ transform: "scale(1.8)" }} />
         </IconButton>
-        <Drawer anchor={"left"} open={open} onClose={() => setOpen(false)} disableScrollLock={true}>
+        <Drawer
+          anchor={"left"}
+          open={open}
+          onClose={() => setOpen(false)}
+          disableScrollLock={true}
+          PaperProps={{
+            sx: { width: "20%" },
+          }}
+        >
           {pages.map((page) => (
             <MenuItem key={page.title}>
-              <Link href={page.path} sx={{ textDecoration: "none", fontFamily: "Formula1Regular" }}>
+              <Link href={page.path} sx={{ textDecoration: "none", fontFamily: "Formula1Regular", fontSize: "2rem" }}>
                 {page.title}
               </Link>
             </MenuItem>
@@ -67,6 +75,7 @@ const NavBarMobile = ({ theme, colorMode, pages }: Props): JSX.Element => {
             color: "inherit",
             textDecoration: "none",
             padding: "1rem",
+            fontSize: "2rem",
           }}
         >
           enordin
