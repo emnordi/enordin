@@ -26,7 +26,7 @@ const NavBarMobile = ({ theme, colorMode, pages }: Props): JSX.Element => {
 
   return (
     <Toolbar disableGutters>
-      <Box sx={{ flexGrow: 1, display: "flex", gap: "40%" }}>
+      <Box sx={{ flexGrow: 1, display: "flex" }}>
         <IconButton
           size="large"
           aria-label="account of current user"
@@ -76,6 +76,8 @@ const NavBarMobile = ({ theme, colorMode, pages }: Props): JSX.Element => {
             textDecoration: "none",
             padding: "1rem",
             fontSize: "2rem",
+            flexGrow: 1,
+            textAlign: "center",
           }}
         >
           enordin
