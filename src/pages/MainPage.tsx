@@ -130,6 +130,7 @@ const MainPage = ({ theme, drivers, seasons }: Props) => {
             racesForSeason={racesForSeason}
             selectedRace={selectedRace}
             setSelectedRace={setSelectedRace}
+            theme={theme}
           />
         )}
       </Box>

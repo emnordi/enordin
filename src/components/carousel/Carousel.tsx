@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { config } from "@react-spring/web";
 import Cards from "./Cards";
 import { Race } from "../../types/race";
+import { Theme } from "@mui/material";
 
 interface Props {
   offset: number;
@@ -12,6 +13,7 @@ interface Props {
   racesForSeason: Race[];
   setSelectedRace: React.Dispatch<React.SetStateAction<Race | undefined>>;
   selectedRace: Race | undefined;
+  theme: Theme;
 }
 
 const MapCarousel = ({
@@ -22,6 +24,7 @@ const MapCarousel = ({
   racesForSeason,
   selectedRace,
   setSelectedRace,
+  theme,
 }: Props): JSX.Element => {
   const [cards, setCards] = useState<
     {
@@ -32,7 +35,7 @@ const MapCarousel = ({
   >([]);
 
   useEffect(() => {
-    const cardsList = Cards(racesForSeason);
+    const cardsList = Cards(racesForSeason, theme);
     const table = cardsList.map((element, index) => {
       const race = racesForSeason[index];
       return {
@@ -41,7 +44,7 @@ const MapCarousel = ({
       };
     });
     setCards(table);
-  }, [racesForSeason]);
+  }, [racesForSeason, theme]);
 
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);

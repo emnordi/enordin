@@ -2,15 +2,17 @@ import { animated, useSpring } from "@react-spring/web";
 import { useEffect, useState } from "react";
 import Styles from "./Card.module.css";
 import { isMobile } from "react-device-detect";
+import { Theme } from "@mui/material";
 
 interface Props {
   imagen: string;
   title: string;
   location: string;
   country: string;
+  theme: Theme;
 }
 
-const Card = ({ imagen, title, location, country }: Props) => {
+const Card = ({ imagen, title, location, country, theme }: Props) => {
   const [show, setShown] = useState(false);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
@@ -32,6 +34,7 @@ const Card = ({ imagen, title, location, country }: Props) => {
         ...props3,
         width: `${isMobile ? windowWidth * 0.5 : windowWidth * 0.25}px`,
         fontSize: `${isMobile ? windowWidth * 0.015 : windowWidth * 0.008}px`,
+        backgroundColor: `${theme.palette.mode === "dark" ? theme.palette.background.default : "#CBC3E3"}`,
       }}
       onMouseEnter={() => setShown(true)}
       onMouseLeave={() => setShown(false)}
