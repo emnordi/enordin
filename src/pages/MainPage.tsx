@@ -70,7 +70,9 @@ const MainPage = ({ theme, drivers, seasons }: Props) => {
     const racesResponse = await getRacesForSeason(selectedSeason.id);
     const racesForSeason = racesResponse?.races || [];
     setRacesForSeason(racesForSeason);
-    setSelectedRace(racesForSeason[0]);
+    if (selectedRace && racesForSeason.indexOf(selectedRace) === -1) {
+      setSelectedRace(racesForSeason[0]);
+    }
   };
 
   useEffect(() => {

@@ -17,25 +17,15 @@ interface Props {
   selectedRace: Race | undefined;
 }
 
-const CircuitAutoComplete = ({
-  racesForSeason,
-  setSelectedRace,
-  selectedRace,
-}: Props) => {
-  const [allCircuitOptions, setAllCircuitOptions] = useState<
-    AutoCompleteOptions[]
-  >([circuitDefaultOption]);
+const CircuitAutoComplete = ({ racesForSeason, setSelectedRace, selectedRace }: Props) => {
+  const [allCircuitOptions, setAllCircuitOptions] = useState<AutoCompleteOptions[]>([circuitDefaultOption]);
 
   useEffect(() => {
-    setAllCircuitOptions(
-      racesForSeason.map((element, index) => raceToAutoCompleteOption(element))
-    );
+    setAllCircuitOptions(racesForSeason.map((element, index) => raceToAutoCompleteOption(element)));
   }, [racesForSeason]);
 
   const handleSelectChangeCircuit = (raceId: string) => {
-    setSelectedRace(
-      racesForSeason.find((element) => element.raceId === +raceId)
-    );
+    setSelectedRace(racesForSeason.find((element) => element.raceId === +raceId) ?? racesForSeason[0]);
   };
 
   return (
