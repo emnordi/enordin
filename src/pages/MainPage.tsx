@@ -70,7 +70,7 @@ const MainPage = ({ theme, drivers, seasons }: Props) => {
     const racesResponse = await getRacesForSeason(selectedSeason.id);
     const racesForSeason = racesResponse?.races || [];
     setRacesForSeason(racesForSeason);
-    if (selectedRace && racesForSeason.indexOf(selectedRace) === -1) {
+    if (!selectedRace || (selectedRace && racesForSeason.indexOf(selectedRace) === -1)) {
       setSelectedRace(racesForSeason[0]);
     }
   };
